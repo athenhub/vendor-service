@@ -1,10 +1,8 @@
 spring:
   application:
-    name: project-interface
+    name: vendor-service
   config:
-    import:
-     - 'optional:configserver:'
-     - 'optional:file:.env[.properties]'
+    import: 'optional:configserver:'
   cloud:
     config:
       discovery:

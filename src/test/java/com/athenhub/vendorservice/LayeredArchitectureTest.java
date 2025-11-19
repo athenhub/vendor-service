@@ -1,4 +1,4 @@
-package com.athenhub.projectinterface;
+package com.athenhub.vendorservice;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
@@ -12,12 +12,12 @@ import com.tngtech.archunit.library.Architectures;
 import java.util.Arrays;
 
 @AnalyzeClasses(
-    packages = "com.athenhub.projectinterface",
+    packages = "com.athenhub.vendorservice",
     importOptions = ImportOption.DoNotIncludeTests.class)
 class LayeredArchitectureTest {
 
   private static final String[] DOMAIN_PACKAGES = {
-    "com.athenhub.projectinterface.example.domain..",
+    "com.athenhub.vendorservice.example.domain..",
   };
 
   @ArchTest
@@ -25,13 +25,13 @@ class LayeredArchitectureTest {
     Architectures.layeredArchitecture()
         .consideringOnlyDependenciesInLayers()
         .layer("Presentation")
-        .definedBy("com.athenhub.projectinterface..presentation..")
+        .definedBy("com.athenhub.vendorservice..presentation..")
         .layer("Application")
-        .definedBy("com.athenhub.projectinterface..application..")
+        .definedBy("com.athenhub.vendorservice..application..")
         .layer("Domain")
-        .definedBy("com.athenhub.projectinterface..domain..")
+        .definedBy("com.athenhub.vendorservice..domain..")
         .layer("Infrastructure")
-        .definedBy("com.athenhub.projectinterface..infrastructure..")
+        .definedBy("com.athenhub.vendorservice..infrastructure..")
         // Presentation은 하위 계층(Application, Domain, Infrastructure)만 접근 가능
         .whereLayer("Presentation")
         .mayOnlyAccessLayers("Application", "Domain", "Infrastructure")
@@ -47,7 +47,7 @@ class LayeredArchitectureTest {
         // global 패키지는 모든 계층에서 자유롭게 접근 가능하도록 제외
         .ignoreDependency(
             DescribedPredicate.alwaysTrue(),
-            JavaClass.Predicates.resideInAPackage("com.athenhub.projectinterface.global.."))
+            JavaClass.Predicates.resideInAPackage("com.athenhub.vendorservice.global.."))
         // 빈 레이어 허용
         .allowEmptyShould(true)
         .check(classes);
@@ -101,13 +101,13 @@ class LayeredArchitectureTest {
     }
 
     // global 패키지가 없으면 스킵
-    if (!hasClassesInPackage(classes, "com.athenhub.projectinterface.global..")) {
+    if (!hasClassesInPackage(classes, "com.athenhub.vendorservice.global..")) {
       return;
     }
 
     noClasses()
         .that()
-        .resideInAPackage("com.athenhub.projectinterface.global..")
+        .resideInAPackage("com.athenhub.vendorservice.global..")
         .should()
         .dependOnClassesThat()
         .resideInAnyPackage(DOMAIN_PACKAGES)
