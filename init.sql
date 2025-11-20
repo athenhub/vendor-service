@@ -1,0 +1,1 @@
+CREATE SCHEMA vendor_service IF NOT EXIST;

@@ -8,6 +8,12 @@ spring:
       discovery:
         enabled: true
         service-id: ${CLOUD_SERVICE_ID}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  docker:
+    compose:
+      lifecycle-management: start_only
 
 eureka:
   instance:
