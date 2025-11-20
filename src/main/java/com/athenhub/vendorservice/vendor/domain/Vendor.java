@@ -2,8 +2,8 @@ package com.athenhub.vendorservice.vendor.domain;
 
 import com.athenhub.vendorservice.global.domain.AbstractAuditEntity;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
+import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
-import com.athenhub.vendorservice.vendor.domain.vo.Location;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
@@ -30,7 +30,7 @@ import lombok.ToString;
  *   <li>{@link VendorType} — 업체 유형(예: 배송업체, 물류업체 등)
  *   <li>{@link HubId} — 소속 허브 식별자
  *   <li>{@link Address} — 업체 주소 정보(주소, 상세주소 포함)
- *   <li>{@link Location} — 업체 위치 정보(위도/경도)
+ *   <li>{@link Coordinate} — 업체 위치 정보(위도/경도)
  * </ul>
  *
  * <p>{@code Vendor}는 {@link AbstractAuditEntity}를 상속하여 생성일시, 수정일시, 생성자, 수정자 등의 감사(auditing) 정보를
@@ -84,7 +84,7 @@ public class Vendor extends AbstractAuditEntity {
 
   @Embedded private Address address;
 
-  @Embedded private Location location;
+  @Embedded private Coordinate coordinate;
 
   /**
    * 신규 업체(Vendor)를 등록하기 위한 팩토리 메서드.
@@ -103,7 +103,7 @@ public class Vendor extends AbstractAuditEntity {
     vendor.type = request.type();
     vendor.hubId = HubId.of(request.hubId());
     vendor.address = Address.of(request.address(), request.detailAddress());
-    vendor.location = Location.of(request.latitude(), request.longitude());
+    vendor.coordinate = Coordinate.of(request.latitude(), request.longitude());
 
     return vendor;
   }
@@ -129,8 +129,8 @@ public class Vendor extends AbstractAuditEntity {
     this.type = request.type();
     this.hubId = HubId.of(request.hubId());
     this.address = Address.of(Objects.requireNonNull(request.address()), request.detailAddress());
-    this.location =
-        Location.of(
+    this.coordinate =
+        Coordinate.of(
             Objects.requireNonNull(request.latitude()),
             Objects.requireNonNull(request.longitude()));
   }

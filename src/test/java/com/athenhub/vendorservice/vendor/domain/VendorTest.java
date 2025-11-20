@@ -6,8 +6,8 @@ import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateReques
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
+import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
-import com.athenhub.vendorservice.vendor.domain.vo.Location;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +33,8 @@ class VendorTest {
     assertThat(vendor.getHubId()).isEqualTo(HubId.of(request.hubId()));
     assertThat(vendor.getAddress())
         .isEqualTo(Address.of(request.address(), request.detailAddress()));
-    assertThat(vendor.getLocation())
-        .isEqualTo(Location.of(request.latitude(), request.longitude()));
+    assertThat(vendor.getCoordinate())
+        .isEqualTo(Coordinate.of(request.latitude(), request.longitude()));
   }
 
   @Test
@@ -48,8 +48,8 @@ class VendorTest {
     assertThat(vendor.getHubId()).isEqualTo(HubId.of(request.hubId()));
     assertThat(vendor.getAddress())
         .isEqualTo(Address.of(request.address(), request.detailAddress()));
-    assertThat(vendor.getLocation())
-        .isEqualTo(Location.of(request.latitude(), request.longitude()));
+    assertThat(vendor.getCoordinate())
+        .isEqualTo(Coordinate.of(request.latitude(), request.longitude()));
   }
 
   @Test
