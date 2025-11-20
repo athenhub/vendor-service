@@ -3,6 +3,7 @@ package com.athenhub.vendorservice.vendor.application.service;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorRepository;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +35,9 @@ public class VendorQueryService implements VendorFinder {
   private final VendorRepository vendorRepository;
 
   @Override
-  public Vendor find(VendorId vendorId) {
+  public Vendor find(UUID vendorId) {
     return vendorRepository
-        .findById(vendorId)
+        .findById(VendorId.of(vendorId))
         .orElseThrow(
             () -> new IllegalArgumentException("업체 정보를 찾을수 없습니다. id: " + vendorId.toString()));
   }

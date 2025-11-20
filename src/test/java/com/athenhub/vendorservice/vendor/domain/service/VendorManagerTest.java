@@ -29,11 +29,11 @@ record VendorManagerTest(
     Vendor vendor = registerVendor();
     VendorUpdateRequest request = createUpdateRequest();
 
-    vendorManager.updateInfo(vendor.getId(), request);
+    vendorManager.updateInfo(vendor.getId().toUuid(), request);
     entityManager.flush();
     entityManager.clear();
 
-    vendor = vendorFinder.find(vendor.getId());
+    vendor = vendorFinder.find(vendor.getId().toUuid());
 
     assertThat(vendor.getName()).isEqualTo(request.name());
     assertThat(vendor.getType()).isEqualTo(request.type());
@@ -48,11 +48,11 @@ record VendorManagerTest(
   void delete() {
     Vendor vendor = registerVendor();
 
-    vendorManager.delete(vendor.getId(), "requestUser");
+    vendorManager.delete(vendor.getId().toUuid(), "requestUser");
     entityManager.flush();
     entityManager.clear();
 
-    vendor = vendorFinder.find(vendor.getId());
+    vendor = vendorFinder.find(vendor.getId().toUuid());
 
     assertThat(vendor.getDeletedBy()).isEqualTo("requestUser");
     assertThat(vendor.getDeletedAt()).isNotNull();

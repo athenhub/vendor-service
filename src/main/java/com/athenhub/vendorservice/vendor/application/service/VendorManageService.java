@@ -2,9 +2,9 @@ package com.athenhub.vendorservice.vendor.application.service;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorRepository;
-import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ import org.springframework.validation.annotation.Validated;
  *   <li>업체 삭제 처리
  * </ul>
  *
- * <p>{@link @Validated} 애너테이션을 통해 메서드 파라미터에 대한 Bean Validation 검증이 수행되며, 서비스 계층에서도 유효성 검사 규칙을 강제한다.
+ * <p>{@link Validated} 애너테이션을 통해 메서드 파라미터에 대한 Bean Validation 검증이 수행되며, 서비스 계층에서도 유효성 검사 규칙을 강제한다.
  *
  * <p>생성자 주입은 {@link RequiredArgsConstructor}에 의해 자동 생성된다.
  *
@@ -48,7 +48,7 @@ public class VendorManageService implements VendorRegister, VendorManager {
   }
 
   @Override
-  public Vendor updateInfo(VendorId vendorId, VendorUpdateRequest updateRequest) {
+  public Vendor updateInfo(UUID vendorId, VendorUpdateRequest updateRequest) {
     Vendor vendor = vendorFinder.find(vendorId);
 
     vendor.updateInfo(updateRequest);
@@ -57,7 +57,7 @@ public class VendorManageService implements VendorRegister, VendorManager {
   }
 
   @Override
-  public Vendor delete(VendorId vendorId, String deleteBy) {
+  public Vendor delete(UUID vendorId, String deleteBy) {
     Vendor vendor = vendorFinder.find(vendorId);
 
     vendor.delete(deleteBy);
