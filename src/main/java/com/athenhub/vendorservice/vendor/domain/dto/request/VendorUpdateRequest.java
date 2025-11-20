@@ -1,6 +1,7 @@
-package com.athenhub.vendorservice.vendor.domain.vo.request;
+package com.athenhub.vendorservice.vendor.domain.dto.request;
 
 import com.athenhub.vendorservice.vendor.domain.VendorType;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -26,10 +27,10 @@ import java.util.UUID;
  * @since 1.0.0
  */
 public record VendorUpdateRequest(
-    @NotNull String name,
+    @NotBlank String name,
     @NotNull UUID hubId,
     @NotNull VendorType type,
-    @NotNull String address,
+    @NotBlank String address,
     String detailAddress,
     @NotNull Double latitude,
     @NotNull Double longitude) {}

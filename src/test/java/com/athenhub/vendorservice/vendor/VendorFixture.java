@@ -2,8 +2,8 @@ package com.athenhub.vendorservice.vendor;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorType;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import java.util.UUID;
 
 /**
