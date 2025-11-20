@@ -1,4 +1,4 @@
-package com.athenhub.vendorservice.vendor.domain.service;
+package com.athenhub.vendorservice.vendor.application.service;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;

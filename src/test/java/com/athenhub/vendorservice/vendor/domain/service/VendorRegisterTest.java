@@ -3,6 +3,8 @@ package com.athenhub.vendorservice.vendor.domain.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.athenhub.vendorservice.vendor.VendorFixture;
+import com.athenhub.vendorservice.vendor.application.service.VendorFinder;
+import com.athenhub.vendorservice.vendor.application.service.VendorRegister;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
