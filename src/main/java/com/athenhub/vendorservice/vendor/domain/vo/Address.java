@@ -1,5 +1,6 @@
 package com.athenhub.vendorservice.vendor.domain.vo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import lombok.AccessLevel;
@@ -31,8 +32,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Address {
-
+  @Column(nullable = false)
   private String address;
+
   private String detailAddress;
 
   /**
