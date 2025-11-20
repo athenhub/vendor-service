@@ -18,6 +18,7 @@ public class VendorQueryService implements VendorFinder {
   public Vendor find(VendorId vendorId) {
     return vendorRepository
         .findById(vendorId)
-        .orElseThrow(() -> new IllegalArgumentException("업체 정보를 찾을수 없습니다. id: " + vendorId.toString()));
+        .orElseThrow(
+            () -> new IllegalArgumentException("업체 정보를 찾을수 없습니다. id: " + vendorId.toString()));
   }
 }

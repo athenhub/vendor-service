@@ -27,10 +27,19 @@ public class VendorManageService implements VendorRegister, VendorManager {
   }
 
   @Override
-  public Vendor updateInfo(VendorId id, VendorUpdateRequest updateRequest) {
-    Vendor vendor = vendorFinder.find(id);
+  public Vendor updateInfo(VendorId vendorId, VendorUpdateRequest updateRequest) {
+    Vendor vendor = vendorFinder.find(vendorId);
 
     vendor.updateInfo(updateRequest);
+
+    return vendorRepository.save(vendor);
+  }
+
+  @Override
+  public Vendor delete(VendorId vendorId, String deleteBy) {
+    Vendor vendor = vendorFinder.find(vendorId);
+
+    vendor.delete(deleteBy);
 
     return vendorRepository.save(vendor);
   }

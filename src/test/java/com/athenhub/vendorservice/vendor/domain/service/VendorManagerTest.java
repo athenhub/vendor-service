@@ -42,6 +42,20 @@ record VendorManagerTest(
         .isEqualTo(Coordinate.of(request.latitude(), request.longitude()));
   }
 
+  @Test
+  void delete() {
+    Vendor vendor = registerVendor();
+
+    vendorManager.delete(vendor.getId(), "requestUser");
+    entityManager.flush();
+    entityManager.clear();
+
+    vendor = vendorFinder.find(vendor.getId());
+
+    assertThat(vendor.getDeletedBy()).isEqualTo("requestUser");
+    assertThat(vendor.getDeletedAt()).isNotNull();
+  }
+
   private Vendor registerVendor() {
     Vendor vendor = vendorRegister.register(createRegisterRequest());
     entityManager.flush();

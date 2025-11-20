@@ -8,4 +8,6 @@ import jakarta.validation.constraints.NotNull;
 
 public interface VendorManager {
   Vendor updateInfo(@NotNull VendorId vendorId, @Valid VendorUpdateRequest updateRequest);
+
+  Vendor delete(VendorId vendorId, String deleteBy);
 }
