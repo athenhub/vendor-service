@@ -4,7 +4,6 @@ import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 /**
@@ -31,7 +30,7 @@ public interface VendorManager {
    * @param updateRequest 수정 요청 DTO (필수, 유효성 검사 적용)
    * @return 수정된 {@link Vendor} 엔티티
    */
-  Vendor updateInfo(@NotNull UUID vendorId, @Valid VendorUpdateRequest updateRequest);
+  Vendor updateInfo(@NotBlank UUID vendorId, @Valid VendorUpdateRequest updateRequest);
 
   /**
    * 업체를 삭제한다.
@@ -40,5 +39,5 @@ public interface VendorManager {
    * @param deleteBy 삭제 수행자(또는 시스템 식별자) (필수)
    * @return 삭제 처리된 {@link Vendor} 엔티티
    */
-  Vendor delete(@NotNull UUID vendorId, @NotBlank String deleteBy);
+  Vendor delete(@NotBlank UUID vendorId, @NotBlank String deleteBy);
 }
