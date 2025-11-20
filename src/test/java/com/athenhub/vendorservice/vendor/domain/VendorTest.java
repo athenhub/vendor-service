@@ -8,8 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

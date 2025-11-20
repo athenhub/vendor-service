@@ -1,7 +1,7 @@
 package com.athenhub.vendorservice.vendor.application.service;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -13,7 +13,7 @@ import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import jakarta.persistence.EntityManager;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

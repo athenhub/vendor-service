@@ -6,8 +6,8 @@ import com.athenhub.vendorservice.vendor.domain.exception.PermissionErrorCode;
 import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class VendorManageService implements VendorRegister, VendorManager {
   public Vendor register(VendorRegisterRequest registerRequest, UUID requestId) {
     checkPermission(requestId);
 
-    checkHubExistence(registerRequest);
+    checkHubExistence(registerRequest.hubId());
 
     Vendor vendor = Vendor.register(registerRequest);
 
@@ -81,9 +81,9 @@ public class VendorManageService implements VendorRegister, VendorManager {
     }
   }
 
-  private void checkHubExistence(VendorRegisterRequest registerRequest) {
-    if (!hubExistenceChecker.hasHub(registerRequest.hubId())) {
-      throw new IllegalArgumentException("허브가 존재하지 않습니다. id: " + registerRequest.hubId());
+  private void checkHubExistence(UUID hubId) {
+    if (!hubExistenceChecker.hasHub(hubId)) {
+      throw new IllegalArgumentException("허브가 존재하지 않습니다. id: " + hubId);
     }
   }
 }

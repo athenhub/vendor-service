@@ -1,7 +1,7 @@
 package com.athenhub.vendorservice.vendor.application.service;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
-import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;

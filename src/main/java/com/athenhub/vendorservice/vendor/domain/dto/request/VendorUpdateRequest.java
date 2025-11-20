@@ -1,4 +1,4 @@
-package com.athenhub.vendorservice.vendor.domain.vo.request;
+package com.athenhub.vendorservice.vendor.domain.dto.request;
 
 import com.athenhub.vendorservice.vendor.domain.VendorType;
 import jakarta.validation.constraints.NotBlank;
