@@ -1,0 +1,21 @@
+spring:
+  config:
+    import:
+      - 'optional:configserver:'
+      - 'optional:file:.env[.properties]'
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: ${CLOUD_SERVICE_ID}
+
+eureka:
+  instance:
+    prefer-ip-address: false
+    hostname: ${EUREKA_HOSTNAME}
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: https://eureka.athenhub.xyz/eureka/
