@@ -2,6 +2,10 @@ package com.athenhub.vendorservice.vendor.application.service;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorRepository;
+import com.athenhub.vendorservice.vendor.domain.exception.PermissionErrorCode;
+import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
+import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
 import java.util.UUID;
@@ -39,9 +43,15 @@ public class VendorManageService implements VendorRegister, VendorManager {
 
   private final VendorRepository vendorRepository;
   private final VendorFinder vendorFinder;
+  private final PermissionChecker permissionChecker;
+  private final HubExistenceChecker hubExistenceChecker;
 
   @Override
-  public Vendor register(VendorRegisterRequest registerRequest) {
+  public Vendor register(VendorRegisterRequest registerRequest, UUID requestId) {
+    checkPermission(requestId);
+
+    checkHubExistence(registerRequest);
+
     Vendor vendor = Vendor.register(registerRequest);
 
     return vendorRepository.save(vendor);
@@ -63,5 +73,17 @@ public class VendorManageService implements VendorRegister, VendorManager {
     vendor.delete(deleteBy);
 
     return vendorRepository.save(vendor);
+  }
+
+  private void checkPermission(UUID requestId) {
+    if (!permissionChecker.hasRegisterPermission(requestId)) {
+      throw new PermissionException(PermissionErrorCode.HAS_NOT_REGISTER_PERMISSION);
+    }
+  }
+
+  private void checkHubExistence(VendorRegisterRequest registerRequest) {
+    if (!hubExistenceChecker.hasHub(registerRequest.hubId())) {
+      throw new IllegalArgumentException("허브가 존재하지 않습니다. id: " + registerRequest.hubId());
+    }
   }
 }

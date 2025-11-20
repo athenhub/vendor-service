@@ -3,6 +3,8 @@ package com.athenhub.vendorservice.vendor.application.service;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 
 /**
  * 신규 업체(Vendor) 등록을 수행하는 도메인 서비스 인터페이스.
@@ -25,7 +27,8 @@ public interface VendorRegister {
    * 신규 업체를 등록한다.
    *
    * @param registerRequest 등록 요청 DTO (필수, 유효성 검사 적용)
+   * @param requestId 요청자 ID (필수)
    * @return 생성된 {@link Vendor} 엔티티
    */
-  Vendor register(@Valid VendorRegisterRequest registerRequest);
+  Vendor register(@Valid VendorRegisterRequest registerRequest, @NotNull UUID requestId);
 }

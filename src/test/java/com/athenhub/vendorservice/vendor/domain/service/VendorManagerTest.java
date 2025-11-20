@@ -3,6 +3,8 @@ package com.athenhub.vendorservice.vendor.domain.service;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.application.service.VendorFinder;
 import com.athenhub.vendorservice.vendor.application.service.VendorManager;
@@ -13,17 +15,28 @@ import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
 import jakarta.persistence.EntityManager;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-record VendorManagerTest(
-    VendorRegister vendorRegister,
-    VendorManager vendorManager,
-    VendorFinder vendorFinder,
-    EntityManager entityManager) {
+class VendorManagerTest {
+  @Autowired private VendorRegister vendorRegister;
+
+  @Autowired private VendorFinder vendorFinder;
+
+  @Autowired private VendorManager vendorManager;
+
+  @Autowired private EntityManager entityManager;
+
+  @MockitoBean private PermissionChecker permissionChecker;
+
+  @MockitoBean private HubExistenceChecker hubExistenceChecker;
+
   @Test
   void updateInfoInfo() {
     Vendor vendor = registerVendor();
@@ -59,7 +72,10 @@ record VendorManagerTest(
   }
 
   private Vendor registerVendor() {
-    Vendor vendor = vendorRegister.register(createRegisterRequest());
+    when(permissionChecker.hasRegisterPermission(any())).thenReturn(true);
+    when(hubExistenceChecker.hasHub(any())).thenReturn(true);
+
+    Vendor vendor = vendorRegister.register(createRegisterRequest(), UUID.randomUUID());
     entityManager.flush();
     entityManager.clear();
 
