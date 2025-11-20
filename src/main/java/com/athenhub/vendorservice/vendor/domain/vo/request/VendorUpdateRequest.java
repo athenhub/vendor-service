@@ -28,9 +28,9 @@ import java.util.UUID;
  */
 public record VendorUpdateRequest(
     @NotBlank String name,
-    @NotBlank UUID hubId,
+    @NotNull UUID hubId,
     @NotNull VendorType type,
     @NotBlank String address,
     String detailAddress,
-    @NotBlank Double latitude,
-    @NotBlank Double longitude) {}
+    @NotNull Double latitude,
+    @NotNull Double longitude) {}
