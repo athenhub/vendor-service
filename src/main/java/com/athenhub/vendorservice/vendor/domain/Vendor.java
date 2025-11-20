@@ -1,12 +1,12 @@
 package com.athenhub.vendorservice.vendor.domain;
 
 import com.athenhub.vendorservice.global.domain.AbstractAuditEntity;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
-import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
-import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
