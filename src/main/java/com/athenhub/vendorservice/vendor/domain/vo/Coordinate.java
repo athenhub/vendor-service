@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Location {
+public class Coordinate {
   @Column(nullable = false)
   private Double latitude;
 
@@ -30,14 +30,14 @@ public class Location {
   private Double longitude;
 
   /**
-   * 위도와 경도로 Location 객체를 생성한다.
+   * 위도와 경도로 Coordinate 객체를 생성한다.
    *
    * @param latitude 위도
    * @param longitude 경도
-   * @return 생성된 {@link Location}
+   * @return 생성된 {@link Coordinate}
    * @throws NullPointerException 위도/경도 입력 값이 누락된 경우
    */
-  public static Location of(Double latitude, Double longitude) {
-    return new Location(Objects.requireNonNull(latitude), Objects.requireNonNull(longitude));
+  public static Coordinate of(Double latitude, Double longitude) {
+    return new Coordinate(Objects.requireNonNull(latitude), Objects.requireNonNull(longitude));
   }
 }

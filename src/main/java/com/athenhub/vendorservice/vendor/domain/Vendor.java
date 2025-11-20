@@ -2,8 +2,8 @@ package com.athenhub.vendorservice.vendor.domain;
 
 import com.athenhub.vendorservice.global.domain.AbstractAuditEntity;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
+import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
-import com.athenhub.vendorservice.vendor.domain.vo.Location;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.vo.request.VendorUpdateRequest;
@@ -30,7 +30,7 @@ import lombok.ToString;
  *   <li>{@link VendorType} — 업체 유형(예: 배송업체, 물류업체 등)
  *   <li>{@link HubId} — 소속 허브 식별자
  *   <li>{@link Address} — 업체 주소 정보(주소, 상세주소 포함)
- *   <li>{@link Location} — 업체 위치 정보(위도/경도)
+ *   <li>{@link Coordinate} — 업체 위치 정보(위도/경도)
  * </ul>
  *
  * <p>{@code Vendor}는 {@link AbstractAuditEntity}를 상속하여 생성일시, 수정일시, 생성자, 수정자 등의 감사(auditing) 정보를
@@ -84,26 +84,26 @@ public class Vendor extends AbstractAuditEntity {
 
   @Embedded private Address address;
 
-  @Embedded private Location location;
+  @Embedded private Coordinate coordinate;
 
   /**
    * 신규 업체(Vendor)를 등록하기 위한 팩토리 메서드.
    *
    * <p>필수 값은 {@code request} 내부에서 유효성 검증되며, {@link VendorId#generateId()} 를 통해 새로운 업체 식별자를 생성한다.
    *
-   * @param request 업체 생성 요청 정보
+   * @param registerRequest 업체 생성 요청 정보
    * @return 생성된 {@link Vendor} 엔티티
    * @throws NullPointerException 필수 입력 값이 누락된 경우
    */
-  public static Vendor register(VendorRegisterRequest request) {
+  public static Vendor register(VendorRegisterRequest registerRequest) {
     Vendor vendor = new Vendor();
 
     vendor.id = VendorId.generateId();
-    vendor.name = Objects.requireNonNull(request.name());
-    vendor.type = request.type();
-    vendor.hubId = HubId.of(request.hubId());
-    vendor.address = Address.of(request.address(), request.detailAddress());
-    vendor.location = Location.of(request.latitude(), request.longitude());
+    vendor.name = Objects.requireNonNull(registerRequest.name());
+    vendor.type = registerRequest.type();
+    vendor.hubId = HubId.of(registerRequest.hubId());
+    vendor.address = Address.of(registerRequest.address(), registerRequest.detailAddress());
+    vendor.coordinate = Coordinate.of(registerRequest.latitude(), registerRequest.longitude());
 
     return vendor;
   }
@@ -121,17 +121,17 @@ public class Vendor extends AbstractAuditEntity {
    *   <li>위치 정보(위도/경도)
    * </ul>
    *
-   * @param request 업체 수정 요청 객체
+   * @param updateRequest 업체 수정 요청 객체
    * @throws NullPointerException 필수 값이 누락된 경우
    */
-  public void updateInfo(VendorUpdateRequest request) {
-    this.name = request.name();
-    this.type = request.type();
-    this.hubId = HubId.of(request.hubId());
-    this.address = Address.of(Objects.requireNonNull(request.address()), request.detailAddress());
-    this.location =
-        Location.of(
-            Objects.requireNonNull(request.latitude()),
-            Objects.requireNonNull(request.longitude()));
+  public void updateInfo(VendorUpdateRequest updateRequest) {
+    this.name = updateRequest.name();
+    this.type = updateRequest.type();
+    this.hubId = HubId.of(updateRequest.hubId());
+    this.address = Address.of(Objects.requireNonNull(updateRequest.address()), updateRequest.detailAddress());
+    this.coordinate =
+        Coordinate.of(
+            Objects.requireNonNull(updateRequest.latitude()),
+            Objects.requireNonNull(updateRequest.longitude()));
   }
 }
