@@ -14,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 @Transactional
 @Validated
 @RequiredArgsConstructor
-public class VendorManageService implements VendorRegister, VendorManager{
+public class VendorManageService implements VendorRegister, VendorManager {
 
   private final VendorRepository vendorRepository;
   private final VendorFinder vendorFinder;

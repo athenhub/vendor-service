@@ -10,13 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class VendorQueryService implements VendorFinder{
+public class VendorQueryService implements VendorFinder {
 
   private final VendorRepository vendorRepository;
 
   @Override
   public Vendor find(VendorId id) {
-    return vendorRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("업체 정보를 찾을수 없습니다. id: " + id.toString() ));
+    return vendorRepository
+        .findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("업체 정보를 찾을수 없습니다. id: " + id.toString()));
   }
 }

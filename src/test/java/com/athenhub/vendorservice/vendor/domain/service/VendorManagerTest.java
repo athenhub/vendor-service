@@ -21,8 +21,7 @@ record VendorManagerTest(
     VendorRegister vendorRegister,
     VendorManager vendorManager,
     VendorFinder vendorFinder,
-    EntityManager entityManager
-) {
+    EntityManager entityManager) {
   @Test
   void updateInfoInfo() {
     Vendor vendor = registerVendor();
@@ -37,8 +36,10 @@ record VendorManagerTest(
     assertThat(vendor.getName()).isEqualTo(request.name());
     assertThat(vendor.getType()).isEqualTo(request.type());
     assertThat(vendor.getHubId()).isEqualTo(HubId.of(request.hubId()));
-    assertThat(vendor.getAddress()).isEqualTo(Address.of(request.address(),  request.detailAddress()));
-    assertThat(vendor.getCoordinate()).isEqualTo(Coordinate.of(request.latitude(),  request.longitude()));
+    assertThat(vendor.getAddress())
+        .isEqualTo(Address.of(request.address(), request.detailAddress()));
+    assertThat(vendor.getCoordinate())
+        .isEqualTo(Coordinate.of(request.latitude(), request.longitude()));
   }
 
   private Vendor registerVendor() {

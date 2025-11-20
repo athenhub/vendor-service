@@ -6,5 +6,6 @@ import org.springframework.data.repository.Repository;
 
 public interface VendorRepository extends Repository<Vendor, VendorId> {
   Vendor save(Vendor vendor);
+
   Optional<Vendor> findById(VendorId id);
 }

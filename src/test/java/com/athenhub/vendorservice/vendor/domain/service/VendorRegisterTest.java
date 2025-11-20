@@ -11,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-record VendorRegisterTest(VendorRegister vendorRegister, VendorFinder vendorFinder, EntityManager entityManager) {
+record VendorRegisterTest(
+    VendorRegister vendorRegister, VendorFinder vendorFinder, EntityManager entityManager) {
 
   @Test
   void register() {
