@@ -2,7 +2,6 @@ package com.athenhub.vendorservice.vendor.domain.service;
 
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateRequest;
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
