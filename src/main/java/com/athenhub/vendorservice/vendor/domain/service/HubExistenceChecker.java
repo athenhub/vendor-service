@@ -1,6 +1,6 @@
 package com.athenhub.vendorservice.vendor.domain.service;
 
-import java.util.UUID;
+import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 
 /**
  * 허브(Hub)의 존재 여부를 확인하는 도메인 검증 인터페이스.
@@ -12,11 +12,12 @@ import java.util.UUID;
  * @since 1.0.0
  */
 public interface HubExistenceChecker {
+
   /**
    * 지정된 허브 식별자에 해당하는 허브가 존재하는지 확인한다.
    *
    * @param hubId 존재 여부를 확인할 허브의 식별자
    * @return 허브가 존재하면 {@code true}, 존재하지 않으면 {@code false}
    */
-  boolean hasHub(UUID hubId);
+  boolean hasHub(HubId hubId);
 }
