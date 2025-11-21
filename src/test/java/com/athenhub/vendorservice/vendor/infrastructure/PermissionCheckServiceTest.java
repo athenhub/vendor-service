@@ -1,0 +1,92 @@
+package com.athenhub.vendorservice.vendor.infrastructure;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import com.athenhub.vendorservice.vendor.domain.vo.HubId;
+import com.athenhub.vendorservice.vendor.infrastructure.client.HubServiceClient;
+import com.athenhub.vendorservice.vendor.infrastructure.client.MemberServiceClient;
+import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
+import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManagers;
+import com.athenhub.vendorservice.vendor.infrastructure.dto.MemberInfo;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class PermissionCheckServiceTest {
+
+  @Mock MemberServiceClient memberServiceClient;
+
+  @Mock HubServiceClient hubServiceClient;
+
+  @InjectMocks PermissionCheckService permissionChecker;
+
+  @Test
+  void ifMasterManagerReturnTrue() {
+    MemberInfo memberInfo = createMemberInfo(UUID.randomUUID(), MemberRole.MASTER_MANAGER);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+        .isTrue();
+  }
+
+  @Test
+  void ifManagerOfHubReturnTrue() {
+    UUID memberId = UUID.randomUUID();
+    MemberInfo memberInfo = createMemberInfo(memberId, MemberRole.HUB_MANAGER);
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    UUID hubId = UUID.randomUUID();
+    HubManager hubManager =
+        new HubManager(memberId, "테스트 회원", "testMember", "testSlackId", MemberRole.HUB_MANAGER);
+    HubManagers hubManagers = new HubManagers(List.of(hubManager));
+    when(hubServiceClient.getHubInfo(hubId)).thenReturn(hubManagers);
+
+    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isTrue();
+  }
+
+  @Test
+  void ifNotManagerOfHubReturnFalse() {
+    UUID memberId = UUID.randomUUID();
+    MemberInfo memberInfo = createMemberInfo(memberId, MemberRole.HUB_MANAGER);
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    UUID hubId = UUID.randomUUID();
+    HubManagers hubManagers = new HubManagers(List.of());
+    when(hubServiceClient.getHubInfo(hubId)).thenReturn(hubManagers);
+
+    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isFalse();
+  }
+
+  @Test
+  void ifNotManagerReturnFalse() {
+    MemberInfo memberInfo = createMemberInfo(UUID.randomUUID(), MemberRole.SHIPPING_AGENT);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+        .isFalse();
+  }
+
+  private static MemberInfo createMemberInfo(UUID memberId, MemberRole role) {
+    return new MemberInfo(
+        memberId,
+        "테스트 회원",
+        "testMember",
+        "testSlackId",
+        "서울 물류",
+        role,
+        "ACTIVATE",
+        LocalDateTime.now(),
+        LocalDateTime.now(),
+        null,
+        null);
+  }
+}
