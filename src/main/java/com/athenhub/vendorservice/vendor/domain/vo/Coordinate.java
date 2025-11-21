@@ -6,6 +6,7 @@ import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
  * @author 김형섭
  * @since 1.0.0
  */
+@Getter
 @EqualsAndHashCode
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
