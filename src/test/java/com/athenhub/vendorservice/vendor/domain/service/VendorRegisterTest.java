@@ -10,6 +10,7 @@ import com.athenhub.vendorservice.vendor.application.service.VendorFinder;
 import com.athenhub.vendorservice.vendor.application.service.VendorRegister;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
+import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import jakarta.persistence.EntityManager;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ class VendorRegisterTest {
   @Test
   void register() {
     when(permissionChecker.hasRegisterPermission(any())).thenReturn(true);
-    when(hubExistenceChecker.hasHub(any())).thenReturn(true);
+    when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
 
     Vendor vendor = vendorRegister.register(createRegisterRequest(), UUID.randomUUID());
 
@@ -52,7 +53,7 @@ class VendorRegisterTest {
   @Test
   void registerIfHubNotExists() {
     when(permissionChecker.hasRegisterPermission(any())).thenReturn(true);
-    when(hubExistenceChecker.hasHub(any())).thenReturn(false);
+    when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(() -> vendorRegister.register(createRegisterRequest(), UUID.randomUUID()))
         .isInstanceOf(IllegalArgumentException.class);
