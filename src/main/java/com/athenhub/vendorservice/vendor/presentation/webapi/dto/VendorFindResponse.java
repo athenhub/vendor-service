@@ -17,7 +17,7 @@ import java.util.UUID;
  *   <li>name — 업체명
  *   <li>type — 업체 유형({@link VendorType})
  *   <li>hubId — 소속 허브 식별자(UUID)
- *   <li>address — 주소
+ *   <li>streetAddress — 주소
  *   <li>addressDetail — 상세 주소
  *   <li>latitude — 위도
  *   <li>longitude — 경도
@@ -33,8 +33,8 @@ public record VendorFindResponse(
     String name,
     VendorType type,
     UUID hubId,
-    String address,
-    String addressDetail,
+    String streetAddress,
+    String detailAddress,
     Double latitude,
     Double longitude) {
 
@@ -50,8 +50,8 @@ public record VendorFindResponse(
         vendor.getName(),
         vendor.getType(),
         vendor.getHubId().toUuid(),
-        vendor.getAddress().getAddress(),
-        vendor.getAddress().getDetailAddress(),
+        vendor.getAddress().getStreet(),
+        vendor.getAddress().getDetail(),
         vendor.getCoordinate().getLatitude(),
         vendor.getCoordinate().getLongitude());
   }
