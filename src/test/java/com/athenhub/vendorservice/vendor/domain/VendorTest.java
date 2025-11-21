@@ -55,7 +55,7 @@ class VendorTest {
     assertThat(vendor.getType()).isEqualTo(request.type());
     assertThat(vendor.getHubId()).isEqualTo(HubId.of(request.hubId()));
     assertThat(vendor.getAddress())
-        .isEqualTo(Address.of(request.address(), request.detailAddress()));
+        .isEqualTo(Address.of(request.streetAddress(), request.detailAddress()));
     assertThat(vendor.getCoordinate())
         .isEqualTo(Coordinate.of(request.latitude(), request.longitude()));
   }
@@ -96,7 +96,7 @@ class VendorTest {
     assertThat(vendor.getType()).isEqualTo(request.type());
     assertThat(vendor.getHubId()).isEqualTo(HubId.of(request.hubId()));
     assertThat(vendor.getAddress())
-        .isEqualTo(Address.of(request.address(), request.detailAddress()));
+        .isEqualTo(Address.of(request.streetAddress(), request.detailAddress()));
     assertThat(vendor.getCoordinate())
         .isEqualTo(Coordinate.of(request.latitude(), request.longitude()));
   }

@@ -107,7 +107,7 @@ public class Vendor extends AbstractAuditEntity {
     vendor.name = Objects.requireNonNull(registerRequest.name());
     vendor.type = registerRequest.type();
     vendor.hubId = HubId.of(registerRequest.hubId());
-    vendor.address = Address.of(registerRequest.address(), registerRequest.detailAddress());
+    vendor.address = Address.of(registerRequest.streetAddress(), registerRequest.detailAddress());
     vendor.coordinate = Coordinate.of(registerRequest.latitude(), registerRequest.longitude());
 
     return vendor;
@@ -139,7 +139,7 @@ public class Vendor extends AbstractAuditEntity {
     this.name = updateRequest.name();
     this.type = updateRequest.type();
     this.hubId = HubId.of(updateRequest.hubId());
-    this.address = Address.of(updateRequest.address(), updateRequest.detailAddress());
+    this.address = Address.of(updateRequest.streetAddress(), updateRequest.detailAddress());
     this.coordinate = Coordinate.of(updateRequest.latitude(), updateRequest.longitude());
   }
 
