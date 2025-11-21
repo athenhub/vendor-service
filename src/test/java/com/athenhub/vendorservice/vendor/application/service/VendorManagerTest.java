@@ -1,4 +1,4 @@
-package com.athenhub.vendorservice.vendor.domain.service;
+package com.athenhub.vendorservice.vendor.application.service;
 
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateRequest;
@@ -6,11 +6,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.athenhub.vendorservice.vendor.application.service.VendorFinder;
-import com.athenhub.vendorservice.vendor.application.service.VendorManager;
-import com.athenhub.vendorservice.vendor.application.service.VendorRegister;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
