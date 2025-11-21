@@ -21,7 +21,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum PermissionErrorCode implements ErrorCode {
   HAS_NOT_REGISTER_PERMISSION(HttpStatus.FORBIDDEN.value(), "HAS_NOT_REGISTER_PERMISSION"),
-  ;
+  HAS_NOT_MANAGE_PERMISSION(HttpStatus.FORBIDDEN.value(), "HAS_NOT_MANAGE_PERMISSION");
 
   private final int status;
   private final String code;

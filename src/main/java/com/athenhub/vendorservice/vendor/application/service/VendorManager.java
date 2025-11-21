@@ -31,7 +31,8 @@ public interface VendorManager {
    * @param updateRequest 수정 요청 DTO (필수, 유효성 검사 적용)
    * @return 수정된 {@link Vendor} 엔티티
    */
-  Vendor updateInfo(@NotNull UUID vendorId, @Valid VendorUpdateRequest updateRequest);
+  Vendor updateInfo(
+      @NotNull UUID vendorId, @Valid VendorUpdateRequest updateRequest, @NotNull UUID requestId);
 
   /**
    * 업체를 삭제한다.
@@ -40,5 +41,5 @@ public interface VendorManager {
    * @param deleteBy 삭제 수행자(또는 시스템 식별자) (필수)
    * @return 삭제 처리된 {@link Vendor} 엔티티
    */
-  Vendor delete(@NotNull UUID vendorId, @NotBlank String deleteBy);
+  Vendor delete(@NotNull UUID vendorId, @NotBlank String deleteBy, @NotNull UUID requestId);
 }
