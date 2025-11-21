@@ -17,7 +17,7 @@ import java.util.UUID;
  *   <li>{@code name} — 업체명 (필수)
  *   <li>{@code hubId} — 소속 허브 ID (필수)
  *   <li>{@code type} — 업체 유형 (필수)
- *   <li>{@code address} — 기본 주소 (필수)
+ *   <li>{@code streetAddress} — 기본 주소 (필수)
  *   <li>{@code detailAddress} — 상세 주소 (선택)
  *   <li>{@code latitude} — 위도 (필수)
  *   <li>{@code longitude} — 경도 (필수)
@@ -30,7 +30,7 @@ public record VendorRegisterRequest(
     @NotBlank String name,
     @NotNull UUID hubId,
     @NotNull VendorType type,
-    @NotBlank String address,
+    @NotBlank String streetAddress,
     String detailAddress,
     @NotNull Double latitude,
     @NotNull Double longitude) {}
