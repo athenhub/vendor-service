@@ -72,7 +72,7 @@ dependencies {
     implementation 'org.postgresql:postgresql'
 
     // common
-    implementation 'com.athenhub:common-mvc:1.1.1'
+    implementation 'com.athenhub:common-mvc:1.1.2'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
