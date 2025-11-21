@@ -1,11 +1,15 @@
 package com.athenhub.vendorservice.vendor;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorType;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
+import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import java.util.UUID;
 
 /**
@@ -77,6 +81,8 @@ public class VendorFixture {
       VendorRegisterRequest request,
       PermissionChecker permissionChecker,
       HubExistenceChecker hubExistenceChecker) {
+    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
     return Vendor.register(request, permissionChecker, hubExistenceChecker, requestId);
   }
 

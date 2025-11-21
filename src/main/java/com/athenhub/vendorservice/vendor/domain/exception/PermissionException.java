@@ -13,8 +13,8 @@ import com.athenhub.commoncore.error.ErrorCode;
  * <p>예시:
  *
  * <pre>{@code
- * if (!permissionChecker.hasRegisterPermission(requestId)) {
- *     throw new PermissionException(PermissionErrorCode.HAS_NOT_REGISTER_PERMISSION);
+ * if (!permissionChecker.hasManagePermission(requestId)) {
+ *     throw new PermissionException(PermissionErrorCode.HAS_NOT_MANAGE_PERMISSION);
  * }
  * }</pre>
  *

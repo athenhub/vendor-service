@@ -98,15 +98,17 @@ public class Vendor extends AbstractAuditEntity {
       HubExistenceChecker hubExistenceChecker,
       UUID requestId) {
 
-    checkRegisterPermission(permissionChecker, requestId);
-    checkHubExistence(HubId.of(registerRequest.hubId()), hubExistenceChecker);
+    HubId hubId = HubId.of(registerRequest.hubId());
+
+    checkManagePermission(hubId, permissionChecker, requestId);
+    checkHubExistence(hubId, hubExistenceChecker);
 
     Vendor vendor = new Vendor();
 
     vendor.id = VendorId.generateId();
     vendor.name = Objects.requireNonNull(registerRequest.name());
     vendor.type = registerRequest.type();
-    vendor.hubId = HubId.of(registerRequest.hubId());
+    vendor.hubId = hubId;
     vendor.address = Address.of(registerRequest.streetAddress(), registerRequest.detailAddress());
     vendor.coordinate = Coordinate.of(registerRequest.latitude(), registerRequest.longitude());
 
@@ -159,16 +161,10 @@ public class Vendor extends AbstractAuditEntity {
     super.delete(deletedBy);
   }
 
-  private static void checkRegisterPermission(PermissionChecker permissionChecker, UUID requestId) {
-    if (!permissionChecker.hasRegisterPermission(requestId)) {
-      throw new PermissionException(PermissionErrorCode.HAS_NOT_REGISTER_PERMISSION);
-    }
-  }
-
   private static void checkManagePermission(
       HubId hubId, PermissionChecker permissionChecker, UUID requestId) {
     if (!permissionChecker.hasManagePermission(requestId, hubId)) {
-      throw new PermissionException(PermissionErrorCode.HAS_NOT_REGISTER_PERMISSION);
+      throw new PermissionException(PermissionErrorCode.HAS_NOT_MANAGE_PERMISSION);
     }
   }
 

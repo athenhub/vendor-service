@@ -18,15 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 class VendorRegisterTest {
-  @Autowired private VendorRegister vendorRegister;
+  @Autowired VendorRegister vendorRegister;
 
-  @MockitoBean private PermissionChecker permissionChecker;
+  @MockitoBean PermissionChecker permissionChecker;
 
-  @MockitoBean private HubExistenceChecker hubExistenceChecker;
+  @MockitoBean HubExistenceChecker hubExistenceChecker;
 
   @Test
   void register() {
-    when(permissionChecker.hasRegisterPermission(any())).thenReturn(true);
+    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
 
     Vendor vendor = vendorRegister.register(createRegisterRequest(), UUID.randomUUID());

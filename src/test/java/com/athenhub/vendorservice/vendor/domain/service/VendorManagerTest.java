@@ -45,9 +45,6 @@ class VendorManagerTest {
 
   @BeforeEach
   void setUp() {
-    when(permissionChecker.hasRegisterPermission(any())).thenReturn(true);
-    when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
-
     vendor = registerVendor();
   }
 
@@ -88,7 +85,7 @@ class VendorManagerTest {
   }
 
   private Vendor registerVendor() {
-    when(permissionChecker.hasRegisterPermission(any())).thenReturn(true);
+    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);
 
     Vendor vendor = vendorRegister.register(createRegisterRequest(), requestId);
