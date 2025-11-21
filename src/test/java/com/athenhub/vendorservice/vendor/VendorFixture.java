@@ -4,6 +4,8 @@ import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorType;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import java.util.UUID;
 
 /**
@@ -17,8 +19,9 @@ import java.util.UUID;
  *
  * <ul>
  *   <li>{@link #createRegisterRequest()} – Vendor 등록 요청 DTO 생성
- *   <li>{@link #create()} – 기본 Vendor 엔티티 생성
- *   <li>{@link #create(VendorRegisterRequest)} – 지정된 요청 기반 Vendor 생성
+ *   <li>{@link #create(PermissionChecker, HubExistenceChecker)} – 기본 Vendor 엔티티 생성
+ *   <li>{@link #create(VendorRegisterRequest, PermissionChecker, HubExistenceChecker)} – 지정된 요청 기반
+ *       Vendor 생성
  *   <li>{@link #createUpdateRequest()} – Vendor 수정 요청 DTO 생성
  * </ul>
  *
@@ -28,6 +31,8 @@ import java.util.UUID;
  * @since 1.0.0
  */
 public class VendorFixture {
+
+  private static final UUID requestId = UUID.randomUUID();
 
   /**
    * 기본 Vendor 등록 요청 DTO를 생성한다.
@@ -49,22 +54,30 @@ public class VendorFixture {
    * 기본 Vendor 엔티티를 생성한다.
    *
    * <p>내부적으로 {@link #createRegisterRequest()} 를 사용하여 Vendor 등록 요청을 생성한 뒤, 도메인 엔티티 생성 메서드인 {@link
-   * Vendor#register(VendorRegisterRequest)} 를 호출한다.
+   * Vendor#register(VendorRegisterRequest, PermissionChecker, HubExistenceChecker, UUID)} 를 호출한다.
    *
+   * @param permissionChecker 권한 검증 인터페이스
+   * @param hubExistenceChecker 허브 존재 여부 검증 인터페이스
    * @return 생성된 {@link Vendor}
    */
-  public static Vendor create() {
-    return create(createRegisterRequest());
+  public static Vendor create(
+      PermissionChecker permissionChecker, HubExistenceChecker hubExistenceChecker) {
+    return create(createRegisterRequest(), permissionChecker, hubExistenceChecker);
   }
 
   /**
    * 지정된 등록 요청 값을 기반으로 Vendor 엔티티를 생성한다.
    *
    * @param request Vendor 등록 요청 DTO
+   * @param permissionChecker 권한 검증 인터페이스
+   * @param hubExistenceChecker 허브 존재 여부 검증 인터페이스
    * @return 생성된 {@link Vendor}
    */
-  public static Vendor create(VendorRegisterRequest request) {
-    return Vendor.register(request);
+  public static Vendor create(
+      VendorRegisterRequest request,
+      PermissionChecker permissionChecker,
+      HubExistenceChecker hubExistenceChecker) {
+    return Vendor.register(request, permissionChecker, hubExistenceChecker, requestId);
   }
 
   /**

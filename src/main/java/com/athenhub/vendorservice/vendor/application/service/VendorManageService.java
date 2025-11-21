@@ -4,11 +4,8 @@ import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorRepository;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
-import com.athenhub.vendorservice.vendor.domain.exception.PermissionErrorCode;
-import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
-import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,10 +46,8 @@ public class VendorManageService implements VendorRegister, VendorManager {
 
   @Override
   public Vendor register(VendorRegisterRequest registerRequest, UUID requestId) {
-    checkRegisterPermission(requestId);
-    checkHubExistence(HubId.of(registerRequest.hubId()));
-
-    Vendor vendor = Vendor.register(registerRequest);
+    Vendor vendor =
+        Vendor.register(registerRequest, permissionChecker, hubExistenceChecker, requestId);
 
     return vendorRepository.save(vendor);
   }
@@ -61,10 +56,7 @@ public class VendorManageService implements VendorRegister, VendorManager {
   public Vendor updateInfo(UUID vendorId, VendorUpdateRequest updateRequest, UUID requestId) {
     Vendor vendor = vendorFinder.find(vendorId);
 
-    checkManagePermission(requestId, vendor.getHubId());
-    checkHubExistence(HubId.of(updateRequest.hubId()));
-
-    vendor.updateInfo(updateRequest);
+    vendor.updateInfo(updateRequest, permissionChecker, hubExistenceChecker, requestId);
 
     return vendorRepository.save(vendor);
   }
@@ -73,28 +65,8 @@ public class VendorManageService implements VendorRegister, VendorManager {
   public Vendor delete(UUID vendorId, String deleteBy, UUID requestId) {
     Vendor vendor = vendorFinder.find(vendorId);
 
-    checkManagePermission(requestId, vendor.getHubId());
-
-    vendor.delete(deleteBy);
+    vendor.delete(deleteBy, permissionChecker, requestId);
 
     return vendorRepository.save(vendor);
-  }
-
-  private void checkRegisterPermission(UUID requestId) {
-    if (!permissionChecker.hasRegisterPermission(requestId)) {
-      throw new PermissionException(PermissionErrorCode.HAS_NOT_REGISTER_PERMISSION);
-    }
-  }
-
-  private void checkManagePermission(UUID requestId, HubId hubId) {
-    if (!permissionChecker.hasManagePermission(requestId, hubId)) {
-      throw new PermissionException(PermissionErrorCode.HAS_NOT_REGISTER_PERMISSION);
-    }
-  }
-
-  private void checkHubExistence(HubId hubId) {
-    if (!hubExistenceChecker.hasHub(hubId)) {
-      throw new IllegalArgumentException("허브가 존재하지 않습니다. id: " + hubId);
-    }
   }
 }
