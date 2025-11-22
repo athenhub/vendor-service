@@ -17,7 +17,7 @@ import java.util.Arrays;
 class LayeredArchitectureTest {
 
   private static final String[] DOMAIN_PACKAGES = {
-    "com.athenhub.vendorservice.domain..",
+    "com.athenhub.vendorservice.vendor.domain..",
   };
 
   @ArchTest

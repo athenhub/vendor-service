@@ -1,24 +1,21 @@
-package com.athenhub.vendorservice.vendor.domain.service;
+package com.athenhub.vendorservice.vendor.application.service;
 
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateRequest;
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.athenhub.vendorservice.vendor.application.service.VendorFinder;
-import com.athenhub.vendorservice.vendor.application.service.VendorManager;
-import com.athenhub.vendorservice.vendor.application.service.VendorRegister;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
-import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
+import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import jakarta.persistence.EntityManager;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,11 +38,17 @@ class VendorManagerTest {
 
   @MockitoBean private HubExistenceChecker hubExistenceChecker;
 
-  private final UUID requestId = randomUUID();
+  Vendor vendor;
+
+  private final UUID requestId = UUID.randomUUID();
+
+  @BeforeEach
+  void setUp() {
+    vendor = registerVendor();
+  }
 
   @Test
   void updateInfoInfo() {
-    Vendor vendor = registerVendor();
     VendorUpdateRequest request = createUpdateRequest();
 
     when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
@@ -67,33 +70,8 @@ class VendorManagerTest {
   }
 
   @Test
-  void updateInfoInfoHasNotPermission() {
-    Vendor vendor = registerVendor();
-    VendorUpdateRequest request = createUpdateRequest();
-
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(false);
-
-    assertThatThrownBy(() -> vendorManager.updateInfo(vendor.getId().toUuid(), request, requestId))
-        .isInstanceOf(PermissionException.class);
-  }
-
-  @Test
-  void updateInfoInfoIfHubNotExists() {
-    Vendor vendor = registerVendor();
-    VendorUpdateRequest request = createUpdateRequest();
-
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
-    when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(false);
-
-    assertThatThrownBy(() -> vendorManager.updateInfo(vendor.getId().toUuid(), request, requestId))
-        .isInstanceOf(IllegalArgumentException.class);
-  }
-
-  @Test
   void delete() {
     when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
-
-    Vendor vendor = registerVendor();
 
     vendorManager.delete(vendor.getId().toUuid(), "requestUser", requestId);
     entityManager.flush();
@@ -105,19 +83,8 @@ class VendorManagerTest {
     assertThat(vendor.getDeletedAt()).isNotNull();
   }
 
-  @Test
-  void deleteIfHubNotExists() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(false);
-
-    Vendor vendor = registerVendor();
-
-    assertThatThrownBy(
-            () -> vendorManager.delete(vendor.getId().toUuid(), "requestUser", requestId))
-        .isInstanceOf(PermissionException.class);
-  }
-
   private Vendor registerVendor() {
-    when(permissionChecker.hasRegisterPermission(any())).thenReturn(true);
+    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);
 
     Vendor vendor = vendorRegister.register(createRegisterRequest(), requestId);

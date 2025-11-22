@@ -3,6 +3,10 @@ package com.athenhub.vendorservice.vendor.domain;
 import com.athenhub.vendorservice.global.domain.AbstractAuditEntity;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.exception.PermissionErrorCode;
+import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
+import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
@@ -14,54 +18,41 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * 업체(Vendor) 도메인을 표현하는 JPA 엔티티.
+ * 업체(Vendor) 도메인 엔티티.
  *
- * <p>본 엔티티는 시스템 내에서 관리되는 업체 정보를 저장하며, 다음과 같은 주요 속성을 포함한다.
+ * <p>업체 등록, 조회, 정보 수정, 삭제 기능을 담당하며, 감사(Audit) 기능은 상위 {@link AbstractAuditEntity}를 통해 처리된다.
  *
- * <ul>
- *   <li>{@link VendorId} — 업체 식별자(복합 키), 엔티티의 식별자로 사용됨
- *   <li>{@code name} — 업체명
- *   <li>{@link VendorType} — 업체 유형(예: 배송업체, 물류업체 등)
- *   <li>{@link HubId} — 소속 허브 식별자
- *   <li>{@link Address} — 업체 주소 정보(주소, 상세주소 포함)
- *   <li>{@link Coordinate} — 업체 위치 정보(위도/경도)
- * </ul>
+ * <p>권한 검증 및 허브 존재 여부 확인을 위해 {@link PermissionChecker}, {@link HubExistenceChecker}를 사용한다. 모든 등록 및
+ * 수정, 삭제 시에는 도메인 규칙에 따라 권한과 허브 존재 여부가 검증되며, 위반 시 {@link PermissionException} 또는 {@link
+ * IllegalArgumentException}이 발생한다.
  *
- * <p>{@code Vendor}는 {@link AbstractAuditEntity}를 상속하여 생성일시, 수정일시, 생성자, 수정자 등의 감사(auditing) 정보를
- * 자동으로 관리한다.
- *
- * <h2>생성 및 변경 규칙</h2>
- *
- * <p>도메인의 일관성을 보장하기 위해 생성과 변경 동작은 다음 메서드를 통해서만 수행된다.
+ * <h2>포함 정보</h2>
  *
  * <ul>
- *   <li>{@link #register(VendorRegisterRequest)} — 신규 업체 등록 팩토리 메서드
- *   <li>{@link #updateInfo(VendorUpdateRequest)} — 기존 업체 정보 수정 메서드
+ *   <li>id — 업체 식별자({@link VendorId})
+ *   <li>name — 업체명
+ *   <li>type — 업체 유형({@link VendorType})
+ *   <li>hubId — 소속 허브 식별자({@link HubId})
+ *   <li>address — 주소 정보({@link Address})
+ *   <li>coordinate — 위치 정보({@link Coordinate})
  * </ul>
  *
- * <h3>사용 예시:</h3>
+ * <h2>주요 메서드</h2>
  *
- * <pre>{@code
- * VendorRegisterRequest request = new VendorRegisterRequest(
- *     "업체명",
- *     VendorType.RECEIVER,
- *     "HUB0001",
- *     "서울시 송파구 ...",
- *     "301호",
- *     37.1234,
- *     127.5678
- * );
- *
- * Vendor vendor = Vendor.register(request);
- * }</pre>
- *
- * <p>엔티티는 JPA 프록시 생성을 위해 기본 생성자를 {@code PROTECTED}로 유지한다.
+ * <ul>
+ *   <li>{@link #register(VendorRegisterRequest, PermissionChecker, HubExistenceChecker, UUID)} —
+ *       새로운 업체 등록
+ *   <li>{@link #updateInfo(VendorUpdateRequest, PermissionChecker, HubExistenceChecker, UUID)} — 업체
+ *       정보 수정
+ *   <li>{@link #delete(String, PermissionChecker, UUID)} — 업체 삭제
+ * </ul>
  *
  * @author 김형섭
  * @since 1.0.0
@@ -87,21 +78,37 @@ public class Vendor extends AbstractAuditEntity {
   @Embedded private Coordinate coordinate;
 
   /**
-   * 신규 업체(Vendor)를 등록하기 위한 팩토리 메서드.
+   * 업체를 등록한다.
    *
-   * <p>필수 값은 {@code request} 내부에서 유효성 검증되며, {@link VendorId#generateId()} 를 통해 새로운 업체 식별자를 생성한다.
+   * <p>등록 시 요청 사용자의 권한과 허브 존재 여부를 검증하며, 검증 실패 시 {@link PermissionException} 또는 {@link
+   * IllegalArgumentException}이 발생한다.
    *
-   * @param registerRequest 업체 생성 요청 정보
-   * @return 생성된 {@link Vendor} 엔티티
+   * @param registerRequest 등록 요청 데이터
+   * @param permissionChecker 권한 검증 인터페이스
+   * @param hubExistenceChecker 허브 존재 여부 검증 인터페이스
+   * @param requestId 요청자 식별자(UUID)
+   * @return 등록된 업체 엔티티
    * @throws NullPointerException 필수 입력 값이 누락된 경우
+   * @throws PermissionException 등록 권한이 없는 경우
+   * @throws IllegalArgumentException 허브가 존재하지 않는 경우
    */
-  public static Vendor register(VendorRegisterRequest registerRequest) {
+  public static Vendor register(
+      VendorRegisterRequest registerRequest,
+      PermissionChecker permissionChecker,
+      HubExistenceChecker hubExistenceChecker,
+      UUID requestId) {
+
+    HubId hubId = HubId.of(registerRequest.hubId());
+
+    checkManagePermission(hubId, permissionChecker, requestId);
+    checkHubExistence(hubId, hubExistenceChecker);
+
     Vendor vendor = new Vendor();
 
     vendor.id = VendorId.generateId();
     vendor.name = Objects.requireNonNull(registerRequest.name());
     vendor.type = registerRequest.type();
-    vendor.hubId = HubId.of(registerRequest.hubId());
+    vendor.hubId = hubId;
     vendor.address = Address.of(registerRequest.streetAddress(), registerRequest.detailAddress());
     vendor.coordinate = Coordinate.of(registerRequest.latitude(), registerRequest.longitude());
 
@@ -109,26 +116,61 @@ public class Vendor extends AbstractAuditEntity {
   }
 
   /**
-   * 기존 업체 정보를 업데이트한다.
+   * 업체 정보를 수정한다.
    *
-   * <p>업데이트 가능한 항목은 다음과 같다.
+   * <p>수정 시 관리 권한과 허브 존재 여부를 검증하며, 검증 실패 시 {@link PermissionException} 또는 {@link
+   * IllegalArgumentException}이 발생한다.
    *
-   * <ul>
-   *   <li>업체명
-   *   <li>업체 유형
-   *   <li>허브 ID
-   *   <li>주소/상세주소
-   *   <li>위치 정보(위도/경도)
-   * </ul>
-   *
-   * @param updateRequest 업체 수정 요청 객체
-   * @throws NullPointerException 필수 값이 누락된 경우
+   * @param updateRequest 수정 요청 데이터
+   * @param permissionChecker 권한 검증 인터페이스
+   * @param hubExistenceChecker 허브 존재 여부 검증 인터페이스
+   * @param requestId 요청자 식별자(UUID)
+   * @throws NullPointerException 필수 입력 값이 누락된 경우
+   * @throws PermissionException 관리 권한이 없는 경우
+   * @throws IllegalArgumentException 허브가 존재하지 않는 경우
    */
-  public void updateInfo(VendorUpdateRequest updateRequest) {
+  public void updateInfo(
+      VendorUpdateRequest updateRequest,
+      PermissionChecker permissionChecker,
+      HubExistenceChecker hubExistenceChecker,
+      UUID requestId) {
+
+    checkManagePermission(this.hubId, permissionChecker, requestId);
+    checkHubExistence(HubId.of(updateRequest.hubId()), hubExistenceChecker);
+
     this.name = updateRequest.name();
     this.type = updateRequest.type();
     this.hubId = HubId.of(updateRequest.hubId());
     this.address = Address.of(updateRequest.streetAddress(), updateRequest.detailAddress());
     this.coordinate = Coordinate.of(updateRequest.latitude(), updateRequest.longitude());
+  }
+
+  /**
+   * 업체를 삭제 처리한다.
+   *
+   * <p>삭제 시 관리 권한을 검증하며, 권한 부족 시 {@link PermissionException}이 발생한다.
+   *
+   * @param deletedBy 삭제 처리한 회원명
+   * @param permissionChecker 권한 검증 인터페이스
+   * @param requestId 요청자 식별자(UUID)
+   * @throws PermissionException 관리 권한이 없는 경우
+   */
+  public void delete(String deletedBy, PermissionChecker permissionChecker, UUID requestId) {
+    checkManagePermission(this.hubId, permissionChecker, requestId);
+
+    super.delete(deletedBy);
+  }
+
+  private static void checkManagePermission(
+      HubId hubId, PermissionChecker permissionChecker, UUID requestId) {
+    if (!permissionChecker.hasManagePermission(requestId, hubId)) {
+      throw new PermissionException(PermissionErrorCode.HAS_NOT_MANAGE_PERMISSION);
+    }
+  }
+
+  private static void checkHubExistence(HubId hubId, HubExistenceChecker hubExistenceChecker) {
+    if (!hubExistenceChecker.hasHub(hubId)) {
+      throw new IllegalArgumentException("허브가 존재하지 않습니다. id: " + hubId);
+    }
   }
 }
