@@ -1,7 +1,10 @@
 package com.athenhub.vendorservice.vendor.application.service;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
+import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * 업체(Vendor) 조회를 담당하는 도메인 서비스 인터페이스.
@@ -26,4 +29,17 @@ public interface VendorFinder {
    * @return 조회된 {@link Vendor} 엔티티
    */
   Vendor find(UUID vendorId);
+
+  /**
+   * 전달받은 {@link VendorSearchCondition} 기반으로 업체를 검색한다.
+   *
+   * <p>검색 조건 객체의 각 필드는 모두 선택적(optional)이며, null 또는 기본값일 경우 해당 필터는 검색에 적용되지 않는다. 검색 조건은 업체 타입, 허브
+   * ID, 키워드 기반 부분 검색, 삭제 여부 포함 여부 등이 포함된다.
+   *
+   * <p>페이징 처리는 {@link Pageable} 의 설정을 따른다.
+   *
+   * @param searchCondition 업체 검색 조건 객체
+   * @return 조건에 맞는 {@link Vendor} 목록을 포함하는 페이지 결과
+   */
+  Page<Vendor> search(VendorSearchCondition searchCondition, Pageable pageable);
 }

@@ -44,14 +44,26 @@ public class VendorFixture {
    * @return 미리 정의된 값으로 구성된 {@link VendorRegisterRequest}
    */
   public static VendorRegisterRequest createRegisterRequest() {
+    return createRegisterRequest(
+        "스파르타 테크", UUID.randomUUID(), VendorType.PRODUCER, "서울특별시 강남구 도곡로 112", "4층 TECH3");
+  }
+
+  /**
+   * 지정된 값으로 Vendor 등록 요청 DTO를 생성한다.
+   *
+   * <p>테스트 시 특정 값으로 Vendor 등록 요청을 만들고자 할 때 사용한다.
+   *
+   * @param name 등록할 업체명
+   * @param hubId 소속 허브 식별자
+   * @param type 벤더 유형
+   * @param streetAddress 도로명 주소
+   * @param detailAddress 상세 주소
+   * @return 지정된 값으로 구성된 {@link VendorRegisterRequest}
+   */
+  public static VendorRegisterRequest createRegisterRequest(
+      String name, UUID hubId, VendorType type, String streetAddress, String detailAddress) {
     return new VendorRegisterRequest(
-        "스파르타 테크",
-        UUID.randomUUID(),
-        VendorType.PRODUCER,
-        "서울특별시 강남구 도곡로 112",
-        "4층 TECH3",
-        37.489662,
-        127.032855);
+        name, hubId, type, streetAddress, detailAddress, 37.489662, 127.032855);
   }
 
   /**

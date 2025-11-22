@@ -5,6 +5,7 @@ import com.athenhub.vendorservice.vendor.application.service.VendorFinder;
 import com.athenhub.vendorservice.vendor.application.service.VendorManager;
 import com.athenhub.vendorservice.vendor.application.service.VendorRegister;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
+import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorDeleteResponse;
@@ -13,10 +14,13 @@ import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorRegisterR
 import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorUpdateResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -85,6 +89,30 @@ public class VendorApi {
     Vendor vendor = vendorFinder.find(vendorId);
 
     return VendorFindResponse.from(vendor);
+  }
+
+  /**
+   * 업체 검색 API.
+   *
+   * <p>해당 엔드포인트는 다양한 검색 조건을 기반으로 업체 목록을 조회한다. 검색 조건은 {@link VendorSearchCondition} 으로 전달되며, Spring
+   * MVC의 {@link ModelAttribute} 바인딩을 통해 쿼리 파라미터에서 자동 매핑된다.
+   *
+   * <p>검색 결과는 {@link Pageable} 을 사용하여 페이징 처리되며, 결과는 {@link VendorFindResponse} 형태로 매핑된 페이지 객체로
+   * 반환된다.
+   *
+   * <p>조회 권한은 MASTER_MANAGER, HUB_MANAGER, SHIPPING_AGENT, VENDOR_AGENT가 포함된다.
+   *
+   * @param searchCondition 업체 검색 조건. 쿼리스트링을 통해 전달된 파라미터가 자동으로 바인딩된다.
+   * @param pageable 페이징 및 정렬 정보.
+   * @return 검색 조건에 부합하는 업체 정보를 {@link VendorFindResponse} 형태로 반환하는 페이지 객체.
+   */
+  @PreAuthorize("hasAnyRole('MASTER_MANAGER', 'HUB_MANAGER', 'SHIPPING_AGENT', 'VENDOR_AGENT')")
+  @GetMapping("/v1/vendors")
+  public Page<VendorFindResponse> search(
+      @ModelAttribute VendorSearchCondition searchCondition, Pageable pageable) {
+    Page<Vendor> vendors = vendorFinder.search(searchCondition, pageable);
+
+    return vendors.map(VendorFindResponse::from);
   }
 
   /**
