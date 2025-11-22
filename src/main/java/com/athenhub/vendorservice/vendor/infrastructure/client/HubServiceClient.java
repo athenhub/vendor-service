@@ -23,5 +23,5 @@ public interface HubServiceClient {
    * @return 허브 관리자 정보 객체 {@link HubManagers}
    */
   @GetMapping("v1/hubs/{hubId}/managers")
-  HubManagers getHubInfo(@PathVariable("hubId") UUID hubId);
+  HubManagers getHubManagers(@PathVariable("hubId") UUID hubId);
 }

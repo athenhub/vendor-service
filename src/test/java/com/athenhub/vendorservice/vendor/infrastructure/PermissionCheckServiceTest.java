@@ -47,7 +47,7 @@ class PermissionCheckServiceTest {
     HubManager hubManager =
         new HubManager(memberId, "테스트 회원", "testMember", "testSlackId", MemberRole.HUB_MANAGER);
     HubManagers hubManagers = new HubManagers(List.of(hubManager));
-    when(hubServiceClient.getHubInfo(hubId)).thenReturn(hubManagers);
+    when(hubServiceClient.getHubManagers(hubId)).thenReturn(hubManagers);
 
     assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isTrue();
   }
@@ -60,7 +60,7 @@ class PermissionCheckServiceTest {
 
     UUID hubId = UUID.randomUUID();
     HubManagers hubManagers = new HubManagers(List.of());
-    when(hubServiceClient.getHubInfo(hubId)).thenReturn(hubManagers);
+    when(hubServiceClient.getHubManagers(hubId)).thenReturn(hubManagers);
 
     assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isFalse();
   }

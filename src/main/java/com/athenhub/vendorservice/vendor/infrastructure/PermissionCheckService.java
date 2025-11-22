@@ -69,7 +69,7 @@ public class PermissionCheckService implements PermissionChecker {
       return false;
     }
 
-    HubManagers managers = hubServiceClient.getHubInfo(hubId.toUuid());
+    HubManagers managers = hubServiceClient.getHubManagers(hubId.toUuid());
 
     return managers.isHubManager(requestId);
   }
