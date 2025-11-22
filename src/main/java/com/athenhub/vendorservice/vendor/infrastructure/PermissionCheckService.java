@@ -6,6 +6,7 @@ import com.athenhub.vendorservice.vendor.infrastructure.client.HubServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.client.MemberServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManagers;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.MemberInfo;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
  * <p>외부 시스템 의존:
  *
  * <ul>
- *   <li>{@link MemberServiceClient} — 요청자의 멤버 정보 조회
+ *   <li>{@link MemberServiceClient} — 요청자의 회원 정보 조회
  *   <li>{@link HubServiceClient} — 허브 정보 및 관리자를 확인
  * </ul>
  *
@@ -44,7 +45,7 @@ public class PermissionCheckService implements PermissionChecker {
   /**
    * 요청자가 특정 허브에 대해 관리 권한을 가지고 있는지 여부를 검증한다.
    *
-   * <p>Master Manager 권한이 있거나, 해당 허브의 Hub Manager일 경우 {@code true}를 반환한다.
+   * <p>Master Manager 권한이 있거나, 해당 허브의 Hub Manager이면서 활성 상태인 경우 {@code true}를 반환한다.
    *
    * @param requestId 요청자 식별자(UUID)
    * @param hubId 검증 대상 허브 식별자
@@ -54,43 +55,46 @@ public class PermissionCheckService implements PermissionChecker {
   public boolean hasManagePermission(UUID requestId, HubId hubId) {
     MemberInfo member = memberServiceClient.getMemberInfo(requestId);
 
-    return isMasterManager(member.role()) || isManagerOfHub(member.role(), hubId, requestId);
+    return isActiveMasterManager(member) || isActiveManagerOfHub(member, hubId, requestId);
   }
 
   /**
-   * 요청자가 해당 허브의 Hub Manager인지 여부를 검증한다.
+   * 요청자가 해당 허브의 활성 Hub Manager인지 여부를 검증한다.
    *
-   * @param role 요청자의 역할
+   * @param member 회원 정보 객체
    * @param hubId 검증 대상 허브 식별자
    * @return 해당 허브의 관리자이면 {@code true}, 아니면 {@code false}
    */
-  private boolean isManagerOfHub(MemberRole role, HubId hubId, UUID requestId) {
-    if (!isHubManager(role)) {
+  private boolean isActiveManagerOfHub(MemberInfo member, HubId hubId, UUID requestId) {
+    if (!isActiveHubManager(member)) {
       return false;
     }
 
-    HubManagers managers = hubServiceClient.getHubInfo(hubId.toUuid());
+    HubManagers managers = hubServiceClient.getHubManagers(hubId.toUuid());
 
     return managers.isHubManager(requestId);
   }
 
   /**
-   * 요청자가 Hub Manager 역할인지 확인한다.
+   * 요청자가 활성 상태의 Hub Manager 역할인지 확인한다.
    *
-   * @param role 요청자의 역할
-   * @return Hub Manager이면 {@code true}, 아니면 {@code false}
+   *  <p>Hub Manager 역할이며, 논리적으로 삭제되지 않은(deletedAt 값이 없는) 경우에만
+   *  활성 사용자로 판단한다.</p>
+   *
+   * @param member 회원 정보 객체
+   * @return 활성 Hub Manager이면 {@code true}, 아니면 {@code false}
    */
-  private boolean isHubManager(MemberRole role) {
-    return MemberRole.HUB_MANAGER.equals(role);
+  private boolean isActiveHubManager(MemberInfo member) {
+    return MemberRole.HUB_MANAGER.equals(member.role()) && Objects.isNull(member.deletedAt());
   }
 
   /**
-   * 요청자가 Master Manager 역할인지 확인한다.
+   * 요청자가 활성 상태의 Master Manager 역할인지 확인한다.
    *
-   * @param role 요청자의 역할
-   * @return Master Manager이면 {@code true}, 아니면 {@code false}
+   * @param member 회원 정보 객체
+   * @return 활성 Master Manager이면 {@code true}, 아니면 {@code false}
    */
-  private boolean isMasterManager(MemberRole role) {
-    return MemberRole.MASTER_MANAGER.equals(role);
+  private boolean isActiveMasterManager(MemberInfo member) {
+    return MemberRole.MASTER_MANAGER.equals(member.role()) && Objects.isNull(member.deletedAt());
   }
 }
