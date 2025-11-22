@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.proxy.HibernateProxy;
 
 /**
  * 업체(Vendor) 도메인 엔티티.
@@ -172,5 +173,33 @@ public class Vendor extends AbstractAuditEntity {
     if (!hubExistenceChecker.hasHub(hubId)) {
       throw new IllegalArgumentException("허브가 존재하지 않습니다. id: " + hubId);
     }
+  }
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy
+            ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+            : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+            : this.getClass();
+    if (thisEffectiveClass != oEffectiveClass) {
+      return false;
+    }
+    Vendor vendor = (Vendor) o;
+    return getId() != null && Objects.equals(getId(), vendor.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    return Objects.hash(id);
   }
 }

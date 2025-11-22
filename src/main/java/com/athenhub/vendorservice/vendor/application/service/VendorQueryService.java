@@ -2,9 +2,13 @@ package com.athenhub.vendorservice.vendor.application.service;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorRepository;
+import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * <ul>
  *   <li>업체 단건 조회
+ *   <li>업체 검색
  *   <li>조회 시 필요한 부가 검증 또는 예외 처리 수행
  * </ul>
  *
@@ -40,5 +45,18 @@ public class VendorQueryService implements VendorFinder {
         .findById(VendorId.of(vendorId))
         .orElseThrow(
             () -> new IllegalArgumentException("업체 정보를 찾을수 없습니다. id: " + vendorId.toString()));
+  }
+
+  @Override
+  public Page<Vendor> search(VendorSearchCondition searchCondition, Pageable pageable) {
+    String keyword =
+        Objects.isNull(searchCondition.keyword()) ? null : searchCondition.keyword().toUpperCase();
+
+    return vendorRepository.search(
+        searchCondition.type(),
+        searchCondition.hubId(),
+        keyword,
+        searchCondition.includeDeleted(),
+        pageable);
   }
 }
