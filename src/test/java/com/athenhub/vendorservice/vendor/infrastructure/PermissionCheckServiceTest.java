@@ -44,8 +44,7 @@ class PermissionCheckServiceTest {
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
-    HubManager hubManager =
-        new HubManager(memberId, "테스트 회원", "testMember", "testSlackId", MemberRole.HUB_MANAGER);
+    HubManager hubManager = new HubManager(memberId, "테스트 회원", "testMember", "testSlackId");
     HubManagers hubManagers = new HubManagers(List.of(hubManager));
     when(hubServiceClient.getHubManagers(hubId)).thenReturn(hubManagers);
 
