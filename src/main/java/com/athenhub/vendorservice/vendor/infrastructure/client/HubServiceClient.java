@@ -1,6 +1,6 @@
 package com.athenhub.vendorservice.vendor.infrastructure.client;
 
-import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManagers;
+import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +20,8 @@ public interface HubServiceClient {
    * 지정된 허브의 관리자 정보를 조회한다.
    *
    * @param hubId 허브 식별자(UUID)
-   * @return 허브 관리자 정보 객체 {@link HubManagers}
+   * @return 허브 관리자 정보 객체 {@link HubManager}
    */
-  @GetMapping("v1/hubs/{hubId}/managers")
-  HubManagers getHubManagers(@PathVariable("hubId") UUID hubId);
+  @GetMapping("v1/hubs/{hubId}/manager")
+  HubManager getHubManager(@PathVariable("hubId") UUID hubId);
 }

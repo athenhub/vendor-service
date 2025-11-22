@@ -7,10 +7,8 @@ import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import com.athenhub.vendorservice.vendor.infrastructure.client.HubServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.client.MemberServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
-import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManagers;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.MemberInfo;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,8 +44,7 @@ class PermissionCheckServiceTest {
     UUID hubId = UUID.randomUUID();
     HubManager hubManager =
         new HubManager(memberId, "테스트 회원", "testMember", "testSlackId", MemberRole.HUB_MANAGER);
-    HubManagers hubManagers = new HubManagers(List.of(hubManager));
-    when(hubServiceClient.getHubManagers(hubId)).thenReturn(hubManagers);
+    when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
 
     assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isTrue();
   }
@@ -59,8 +56,10 @@ class PermissionCheckServiceTest {
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
-    HubManagers hubManagers = new HubManagers(List.of());
-    when(hubServiceClient.getHubManagers(hubId)).thenReturn(hubManagers);
+    HubManager hubManager =
+        new HubManager(
+            UUID.randomUUID(), "테스트 회원", "testMember", "testSlackId", MemberRole.HUB_MANAGER);
+    when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
 
     assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isFalse();
   }

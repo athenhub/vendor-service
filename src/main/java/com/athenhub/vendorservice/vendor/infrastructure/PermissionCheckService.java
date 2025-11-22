@@ -4,7 +4,7 @@ import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import com.athenhub.vendorservice.vendor.infrastructure.client.HubServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.client.MemberServiceClient;
-import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManagers;
+import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.MemberInfo;
 import java.util.Objects;
 import java.util.UUID;
@@ -42,20 +42,16 @@ public class PermissionCheckService implements PermissionChecker {
   private final MemberServiceClient memberServiceClient;
   private final HubServiceClient hubServiceClient;
 
-  /**
-   * 요청자가 특정 허브에 대해 관리 권한을 가지고 있는지 여부를 검증한다.
-   *
-   * <p>Master Manager 권한이 있거나, 해당 허브의 Hub Manager이면서 활성 상태인 경우 {@code true}를 반환한다.
-   *
-   * @param requestId 요청자 식별자(UUID)
-   * @param hubId 검증 대상 허브 식별자
-   * @return 권한이 있으면 {@code true}, 없으면 {@code false}
-   */
   @Override
-  public boolean hasManagePermission(UUID requestId, HubId hubId) {
+  public boolean hasRegisterPermission(UUID requestId, HubId hubId) {
     MemberInfo member = memberServiceClient.getMemberInfo(requestId);
 
     return isActiveMasterManager(member) || isActiveManagerOfHub(member, hubId, requestId);
+  }
+
+  @Override
+  public boolean hasManagePermission(UUID requestId, HubId hubId) {
+    return hasRegisterPermission(requestId, hubId);
   }
 
   /**
@@ -70,16 +66,15 @@ public class PermissionCheckService implements PermissionChecker {
       return false;
     }
 
-    HubManagers managers = hubServiceClient.getHubManagers(hubId.toUuid());
+    HubManager manager = hubServiceClient.getHubManager(hubId.toUuid());
 
-    return managers.isHubManager(requestId);
+    return requestId.equals(manager.id());
   }
 
   /**
    * 요청자가 활성 상태의 Hub Manager 역할인지 확인한다.
    *
-   *  <p>Hub Manager 역할이며, 논리적으로 삭제되지 않은(deletedAt 값이 없는) 경우에만
-   *  활성 사용자로 판단한다.</p>
+   * <p>Hub Manager 역할이며, 논리적으로 삭제되지 않은(deletedAt 값이 없는) 경우에만 활성 사용자로 판단한다.
    *
    * @param member 회원 정보 객체
    * @return 활성 Hub Manager이면 {@code true}, 아니면 {@code false}
