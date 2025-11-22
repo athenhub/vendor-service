@@ -93,7 +93,7 @@ public class VendorFixture {
       VendorRegisterRequest request,
       PermissionChecker permissionChecker,
       HubExistenceChecker hubExistenceChecker) {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
     return Vendor.register(request, permissionChecker, hubExistenceChecker, requestId);
   }
