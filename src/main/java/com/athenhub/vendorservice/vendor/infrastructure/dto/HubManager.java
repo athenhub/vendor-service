@@ -12,8 +12,8 @@ import java.util.UUID;
  * @param name 관리자 이름
  * @param username 시스템 계정명
  * @param slackId Slack ID
- * @param role 관리자 역할 {@link MemberRole}
+ *
  * @author 김형섭
  * @since 1.0.0
  */
-public record HubManager(UUID id, String name, String username, String slackId, MemberRole role) {}
+public record HubManager(UUID id, String name, String username, String slackId) {}
