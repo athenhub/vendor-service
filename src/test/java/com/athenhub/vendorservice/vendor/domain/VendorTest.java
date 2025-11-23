@@ -12,6 +12,7 @@ import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterReques
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
@@ -30,22 +31,27 @@ class VendorTest {
 
   @Mock HubExistenceChecker hubExistenceChecker;
 
+  @Mock MemberExistenceChecker memberExistenceChecker;
+
   Vendor vendor;
 
   private final UUID requestId = UUID.randomUUID();
 
   @BeforeEach
   void setUp() {
-    vendor = create(permissionChecker, hubExistenceChecker);
+    vendor = create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
   }
 
   @Test
   void register() {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
+    when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
 
     VendorRegisterRequest request = createRegisterRequest();
-    Vendor vendor = Vendor.register(request, permissionChecker, hubExistenceChecker, requestId);
+    Vendor vendor =
+        Vendor.register(
+            request, permissionChecker, hubExistenceChecker, memberExistenceChecker, requestId);
 
     assertThat(vendor.getId()).isNotNull();
     assertThat(vendor.getName()).isEqualTo(request.name());
@@ -64,7 +70,13 @@ class VendorTest {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(
-            () -> Vendor.register(request, permissionChecker, hubExistenceChecker, requestId))
+            () ->
+                Vendor.register(
+                    request,
+                    permissionChecker,
+                    hubExistenceChecker,
+                    memberExistenceChecker,
+                    requestId))
         .isInstanceOf(PermissionException.class);
   }
 
@@ -76,7 +88,32 @@ class VendorTest {
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(
-            () -> Vendor.register(request, permissionChecker, hubExistenceChecker, requestId))
+            () ->
+                Vendor.register(
+                    request,
+                    permissionChecker,
+                    hubExistenceChecker,
+                    memberExistenceChecker,
+                    requestId))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void registerIfMemberNotExists() {
+    VendorRegisterRequest request = createRegisterRequest();
+
+    when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
+    when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
+    when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(false);
+
+    assertThatThrownBy(
+            () ->
+                Vendor.register(
+                    request,
+                    permissionChecker,
+                    hubExistenceChecker,
+                    memberExistenceChecker,
+                    requestId))
         .isInstanceOf(IllegalArgumentException.class);
   }
 

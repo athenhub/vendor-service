@@ -16,6 +16,7 @@ import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,13 +50,15 @@ class VendorApiTest {
 
   @MockitoBean HubExistenceChecker hubExistenceChecker;
 
+  @MockitoBean MemberExistenceChecker memberExistenceChecker;
+
   Vendor vendor;
 
   private final UUID requestId = UUID.randomUUID();
 
   @BeforeEach
   void setUp() {
-    vendor = create(permissionChecker, hubExistenceChecker);
+    vendor = create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
   }
 
   @Test
@@ -63,7 +66,9 @@ class VendorApiTest {
   void register() throws JsonProcessingException {
     VendorRegisterRequest request = VendorFixture.createRegisterRequest();
 
-    vendor = VendorFixture.create(request, permissionChecker, hubExistenceChecker);
+    vendor =
+        VendorFixture.create(
+            request, permissionChecker, hubExistenceChecker, memberExistenceChecker);
     given(vendorRegister.register(any(VendorRegisterRequest.class), any())).willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
 
@@ -86,7 +91,9 @@ class VendorApiTest {
   void registerIfUnauthorized() throws JsonProcessingException {
     VendorRegisterRequest request = VendorFixture.createRegisterRequest();
 
-    Vendor vendor = VendorFixture.create(request, permissionChecker, hubExistenceChecker);
+    Vendor vendor =
+        VendorFixture.create(
+            request, permissionChecker, hubExistenceChecker, memberExistenceChecker);
     given(vendorRegister.register(any(VendorRegisterRequest.class), any())).willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
 
@@ -104,7 +111,8 @@ class VendorApiTest {
   @Test
   @MockUser(roles = "MASTER_MANAGER")
   void find() {
-    Vendor vendor = VendorFixture.create(permissionChecker, hubExistenceChecker);
+    Vendor vendor =
+        VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
     given(vendorFinder.find(any())).willReturn(vendor);
 
     MvcTestResult result =
@@ -121,7 +129,8 @@ class VendorApiTest {
   void update() throws JsonProcessingException {
     VendorUpdateRequest request = VendorFixture.createUpdateRequest();
 
-    Vendor vendor = VendorFixture.create(permissionChecker, hubExistenceChecker);
+    Vendor vendor =
+        VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
     given(vendorManager.updateInfo(any(), any(VendorUpdateRequest.class), any()))
         .willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
@@ -145,7 +154,8 @@ class VendorApiTest {
   void updateIfUnauthorized() throws JsonProcessingException {
     VendorUpdateRequest request = VendorFixture.createUpdateRequest();
 
-    Vendor vendor = VendorFixture.create(permissionChecker, hubExistenceChecker);
+    Vendor vendor =
+        VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
     given(vendorManager.updateInfo(any(), any(VendorUpdateRequest.class), any()))
         .willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
@@ -164,7 +174,8 @@ class VendorApiTest {
   @Test
   @MockUser(roles = "MASTER_MANAGER")
   void delete() {
-    Vendor vendor = VendorFixture.create(permissionChecker, hubExistenceChecker);
+    Vendor vendor =
+        VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
     given(vendorManager.delete(any(), anyString(), any())).willReturn(vendor);
 
     MvcTestResult result =
@@ -179,7 +190,8 @@ class VendorApiTest {
   @Test
   @MockUser(roles = "VENDOR_AGENT")
   void deleteIfUnauthorized() {
-    Vendor vendor = VendorFixture.create(permissionChecker, hubExistenceChecker);
+    Vendor vendor =
+        VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
     given(vendorManager.delete(any(), anyString(), any())).willReturn(vendor);
 
     MvcTestResult result =

@@ -1,5 +1,6 @@
 package com.athenhub.vendorservice.vendor.domain.vo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import java.util.UUID;
@@ -29,7 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class VendorAgentId {
-
+  @Column(name = "agent_id", nullable = false)
   private UUID id;
 
   /**

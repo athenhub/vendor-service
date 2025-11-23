@@ -1,28 +1,24 @@
 package com.athenhub.vendorservice.vendor.domain;
 
 import com.athenhub.vendorservice.global.domain.AbstractAuditEntity;
-import com.athenhub.vendorservice.vendor.domain.dto.request.VendorAgentChangeRequest;
-import com.athenhub.vendorservice.vendor.domain.dto.request.VendorAgentRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.exception.PermissionErrorCode;
 import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgentId;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -54,8 +50,8 @@ import org.hibernate.proxy.HibernateProxy;
  * <h2>주요 메서드</h2>
  *
  * <ul>
- *   <li>{@link #register(VendorRegisterRequest, PermissionChecker, HubExistenceChecker, UUID)} —
- *       새로운 업체 등록
+ *   <li>{@link #register(VendorRegisterRequest, PermissionChecker, HubExistenceChecker,
+ *       MemberExistenceChecker, UUID)} — 새로운 업체 등록
  *   <li>{@link #updateInfo(VendorUpdateRequest, PermissionChecker, HubExistenceChecker, UUID)} — 업체
  *       정보 수정
  *   <li>{@link #delete(String, PermissionChecker, UUID)} — 업체 삭제
@@ -84,9 +80,7 @@ public class Vendor extends AbstractAuditEntity {
 
   @Embedded private Coordinate coordinate;
 
-  @ToString.Exclude
-  @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<VendorAgent> vendorAgents = new ArrayList<>();
+  @Embedded private VendorAgentId agent;
 
   /**
    * 업체를 등록한다.
@@ -97,6 +91,7 @@ public class Vendor extends AbstractAuditEntity {
    * @param registerRequest 등록 요청 데이터
    * @param permissionChecker 권한 검증 인터페이스
    * @param hubExistenceChecker 허브 존재 여부 검증 인터페이스
+   * @param memberExistenceChecker 회원 존재 여부 검증 인터페이스
    * @param requestId 요청자 식별자(UUID)
    * @return 등록된 업체 엔티티
    * @throws NullPointerException 필수 입력 값이 누락된 경우
@@ -107,12 +102,14 @@ public class Vendor extends AbstractAuditEntity {
       VendorRegisterRequest registerRequest,
       PermissionChecker permissionChecker,
       HubExistenceChecker hubExistenceChecker,
+      MemberExistenceChecker memberExistenceChecker,
       UUID requestId) {
 
     HubId hubId = HubId.of(registerRequest.hubId());
 
     checkRegisterPermission(hubId, permissionChecker, requestId);
     checkHubExistence(hubId, hubExistenceChecker);
+    checkMemberExistence(registerRequest.agentId(), memberExistenceChecker);
 
     Vendor vendor = new Vendor();
 
@@ -122,9 +119,7 @@ public class Vendor extends AbstractAuditEntity {
     vendor.hubId = hubId;
     vendor.address = Address.of(registerRequest.streetAddress(), registerRequest.detailAddress());
     vendor.coordinate = Coordinate.of(registerRequest.latitude(), registerRequest.longitude());
-
-    VendorAgent agent = VendorAgent.register(registerRequest.agent());
-    vendor.addVendorAgent(agent);
+    vendor.agent = VendorAgentId.of(registerRequest.agentId());
 
     return vendor;
   }
@@ -175,28 +170,6 @@ public class Vendor extends AbstractAuditEntity {
     super.delete(deletedBy);
   }
 
-  public void changeAgent(String changeBy, VendorAgentChangeRequest changeRequest, PermissionChecker permissionChecker, UUID requestId) {
-    checkManagePermission(this.hubId, permissionChecker, requestId);
-
-    VendorAgent currentAgent = getAgent();
-    currentAgent.delete(changeBy);
-
-    VendorAgent newAgent = VendorAgent.register(VendorAgentRegisterRequest.of(changeRequest));
-    addVendorAgent(newAgent);
-  }
-
-  private void addVendorAgent(VendorAgent agent) {
-    this.vendorAgents.add(agent);
-    agent.assignTo(this);
-  }
-
-  public VendorAgent getAgent() {
-    return this.vendorAgents.stream()
-        .filter(v -> Objects.isNull(v.getDeletedAt()))
-        .findFirst()
-        .orElse(null);
-  }
-
   private static void checkRegisterPermission(
       HubId hubId, PermissionChecker permissionChecker, UUID requestId) {
     if (!permissionChecker.hasRegisterPermission(requestId, hubId)) {
@@ -214,6 +187,13 @@ public class Vendor extends AbstractAuditEntity {
   private static void checkHubExistence(HubId hubId, HubExistenceChecker hubExistenceChecker) {
     if (!hubExistenceChecker.hasHub(hubId)) {
       throw new IllegalArgumentException("허브가 존재하지 않습니다. id: " + hubId);
+    }
+  }
+
+  private static void checkMemberExistence(
+      UUID memberId, MemberExistenceChecker memberExistenceChecker) {
+    if (!memberExistenceChecker.hasMember(memberId)) {
+      throw new IllegalArgumentException("회원이 존재하지 않습니다. id: " + memberId);
     }
   }
 

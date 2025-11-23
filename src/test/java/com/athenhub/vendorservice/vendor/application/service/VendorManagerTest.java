@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
@@ -37,6 +38,8 @@ class VendorManagerTest {
   @MockitoBean private PermissionChecker permissionChecker;
 
   @MockitoBean private HubExistenceChecker hubExistenceChecker;
+
+  @MockitoBean private MemberExistenceChecker memberExistenceChecker;
 
   Vendor vendor;
 
@@ -86,6 +89,7 @@ class VendorManagerTest {
   private Vendor registerVendor() {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);
+    when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
 
     Vendor vendor = vendorRegister.register(createRegisterRequest(), requestId);
     entityManager.flush();
