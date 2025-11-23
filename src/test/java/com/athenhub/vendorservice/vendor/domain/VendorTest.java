@@ -127,7 +127,7 @@ class VendorTest {
   void updateInfo() {
     VendorUpdateRequest request = createUpdateRequest();
 
-    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
 
     vendor.updateInfo(request, permissionChecker, hubExistenceChecker, requestId);
@@ -145,7 +145,7 @@ class VendorTest {
   void updateInfoHasNotPermission() {
     VendorUpdateRequest request = createUpdateRequest();
 
-    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(false);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(false);
 
     assertThatThrownBy(
             () -> vendor.updateInfo(request, permissionChecker, hubExistenceChecker, requestId))
@@ -156,7 +156,7 @@ class VendorTest {
   void updateInfoIfHubNotExists() {
     VendorUpdateRequest request = createUpdateRequest();
 
-    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(
@@ -192,7 +192,7 @@ class VendorTest {
 
   @Test
   void changeAgent() {
-    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
 
     UUID newAgentId = UUID.randomUUID();
@@ -203,7 +203,7 @@ class VendorTest {
 
   @Test
   void changeAgentHasNotPermission() {
-    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(false);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(false);
 
     assertThatThrownBy(
             () ->
@@ -214,7 +214,7 @@ class VendorTest {
 
   @Test
   void changeAgentIfMemberNotExists() {
-    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(false);
 
     assertThatThrownBy(

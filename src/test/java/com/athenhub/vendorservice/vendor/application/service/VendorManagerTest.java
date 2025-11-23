@@ -54,7 +54,7 @@ class VendorManagerTest {
   void updateInfoInfo() {
     VendorUpdateRequest request = createUpdateRequest();
 
-    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
 
     vendorManager.updateInfo(vendor.getId().toUuid(), request, requestId);
@@ -88,7 +88,7 @@ class VendorManagerTest {
 
   @Test
   void changeAgent() {
-    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
 
     UUID newAgentId = UUID.randomUUID();

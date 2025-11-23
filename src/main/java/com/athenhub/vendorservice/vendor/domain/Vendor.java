@@ -210,14 +210,14 @@ public class Vendor extends AbstractAuditEntity {
     }
   }
 
-  private static void checkUpdatePermission(
+  private void checkUpdatePermission(
       HubId hubId, PermissionChecker permissionChecker, UUID requestId) {
-    if (!permissionChecker.hasUpdatePermission(requestId, hubId)) {
+    if (!permissionChecker.hasUpdatePermission(requestId, hubId, this.agentId)) {
       throw new PermissionException(PermissionErrorCode.HAS_NOT_UPDATE_PERMISSION);
     }
   }
 
-  private static void checkDeletePermission(
+  private void checkDeletePermission(
       HubId hubId, PermissionChecker permissionChecker, UUID requestId) {
     if (!permissionChecker.hasDeletePermission(requestId, hubId)) {
       throw new PermissionException(PermissionErrorCode.HAS_NOT_DELETE_PERMISSION);

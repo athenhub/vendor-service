@@ -2,6 +2,7 @@ package com.athenhub.vendorservice.vendor.infrastructure;
 
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgentId;
 import com.athenhub.vendorservice.vendor.infrastructure.client.HubServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.client.MemberServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
@@ -50,13 +51,23 @@ public class PermissionCheckService implements PermissionChecker {
   }
 
   @Override
-  public boolean hasUpdatePermission(UUID requestId, HubId hubId) {
-    return hasRegisterPermission(requestId, hubId);
+  public boolean hasUpdatePermission(UUID requestId, HubId hubId, VendorAgentId agentId) {
+    return isVendorAgent(agentId, requestId) || hasRegisterPermission(requestId, hubId);
   }
 
   @Override
   public boolean hasDeletePermission(UUID requestId, HubId hubId) {
     return hasRegisterPermission(requestId, hubId);
+  }
+
+  /**
+   * 요청자가 활성 상태의 Master Manager 역할인지 확인한다.
+   *
+   * @param member 회원 정보 객체
+   * @return 활성 Master Manager이면 {@code true}, 아니면 {@code false}
+   */
+  private boolean isActiveMasterManager(MemberInfo member) {
+    return MemberRole.MASTER_MANAGER.equals(member.role()) && Objects.isNull(member.deletedAt());
   }
 
   /**
@@ -89,12 +100,13 @@ public class PermissionCheckService implements PermissionChecker {
   }
 
   /**
-   * 요청자가 활성 상태의 Master Manager 역할인지 확인한다.
+   * 요청자가 업체의 담당자인지 확인한다.
    *
-   * @param member 회원 정보 객체
-   * @return 활성 Master Manager이면 {@code true}, 아니면 {@code false}
+   * @param agentId 업체 담당자 ID
+   * @param requestId 요청자 ID
+   * @return 요청자가 업체 담당자이면 {@code true}, 아니면 {@code false}
    */
-  private boolean isActiveMasterManager(MemberInfo member) {
-    return MemberRole.MASTER_MANAGER.equals(member.role()) && Objects.isNull(member.deletedAt());
+  private boolean isVendorAgent(VendorAgentId agentId, UUID requestId) {
+    return agentId.toUuid().equals(requestId);
   }
 }
