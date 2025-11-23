@@ -38,8 +38,17 @@ public interface VendorManager {
    * 업체를 삭제한다.
    *
    * @param vendorId 삭제할 업체 ID (필수)
-   * @param deleteBy 삭제 수행자(또는 시스템 식별자) (필수)
+   * @param deleteBy 삭제 요청자 (필수)
    * @return 삭제 처리된 {@link Vendor} 엔티티
    */
   Vendor delete(@NotNull UUID vendorId, @NotBlank String deleteBy, @NotNull UUID requestId);
+
+  /**
+   * 업체 담당자를 변경한다.
+   *
+   * @param vendorId 변경할 업체 ID (필수)
+   * @param newAgentId 변경할 업체 담당자 ID (필수)
+   * @param requestId 변경 요청자 (필수)
+   */
+  void changeAgent(@NotNull UUID vendorId, @NotNull UUID newAgentId, @NotNull UUID requestId);
 }

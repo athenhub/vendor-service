@@ -1,7 +1,7 @@
 package com.athenhub.vendorservice.vendor.infrastructure.client;
 
-import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.HubInfo;
+import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

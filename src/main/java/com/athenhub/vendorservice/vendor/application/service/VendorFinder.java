@@ -2,6 +2,7 @@ package com.athenhub.vendorservice.vendor.application.service;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,4 +43,12 @@ public interface VendorFinder {
    * @return 조건에 맞는 {@link Vendor} 목록을 포함하는 페이지 결과
    */
   Page<Vendor> search(VendorSearchCondition searchCondition, Pageable pageable);
+
+  /**
+   * 업체의 담당자 정보를 조회한다.
+   *
+   * @param vendorId 조회할 업체
+   * @return vendorId에 해당하는 업체의 담당자 정보
+   */
+  VendorAgent findAgent(UUID vendorId);
 }

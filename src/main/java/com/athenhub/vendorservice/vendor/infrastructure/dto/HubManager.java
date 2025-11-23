@@ -12,7 +12,6 @@ import java.util.UUID;
  * @param name 관리자 이름
  * @param username 시스템 계정명
  * @param slackId Slack ID
- *
  * @author 김형섭
  * @since 1.0.0
  */

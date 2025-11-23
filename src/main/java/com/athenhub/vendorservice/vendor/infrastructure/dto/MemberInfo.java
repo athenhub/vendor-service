@@ -1,5 +1,7 @@
 package com.athenhub.vendorservice.vendor.infrastructure.dto;
 
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgentId;
 import com.athenhub.vendorservice.vendor.infrastructure.MemberRole;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -34,4 +36,15 @@ public record MemberInfo(
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
     LocalDateTime deletedAt,
-    String deletedBy) {}
+    String deletedBy) {
+  /**
+   * 회원 정보를 기반으로 {@link VendorAgent} 객체를 생성하여 반환한다.
+   *
+   * <p>해당 메서드는 회원 정보를 업체 담당자(VendorAgent) 도메인 모델로 변환할 때 사용된다.
+   *
+   * @return 변환된 {@link VendorAgent} 객체
+   */
+  public VendorAgent toVendorAgent() {
+    return new VendorAgent(VendorAgentId.of(id), name, username, slackId);
+  }
+}

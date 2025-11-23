@@ -5,6 +5,7 @@ import com.athenhub.vendorservice.vendor.domain.VendorRepository;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +44,17 @@ public class VendorManageService implements VendorRegister, VendorManager {
   private final VendorFinder vendorFinder;
   private final PermissionChecker permissionChecker;
   private final HubExistenceChecker hubExistenceChecker;
+  private final MemberExistenceChecker memberExistenceChecker;
 
   @Override
   public Vendor register(VendorRegisterRequest registerRequest, UUID requestId) {
     Vendor vendor =
-        Vendor.register(registerRequest, permissionChecker, hubExistenceChecker, requestId);
+        Vendor.register(
+            registerRequest,
+            permissionChecker,
+            hubExistenceChecker,
+            memberExistenceChecker,
+            requestId);
 
     return vendorRepository.save(vendor);
   }
@@ -68,5 +75,12 @@ public class VendorManageService implements VendorRegister, VendorManager {
     vendor.delete(deleteBy, permissionChecker, requestId);
 
     return vendorRepository.save(vendor);
+  }
+
+  @Override
+  public void changeAgent(UUID vendorId, UUID newAgentId, UUID requestId) {
+    Vendor vendor = vendorFinder.find(vendorId);
+
+    vendor.changeAgent(newAgentId, permissionChecker, memberExistenceChecker, requestId);
   }
 }

@@ -8,6 +8,9 @@ import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
+import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorAgentChangeRequest;
+import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorAgentResponse;
 import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorDeleteResponse;
 import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorFindResponse;
 import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorRegisterResponse;
@@ -152,5 +155,39 @@ public class VendorApi {
     Vendor vendor = vendorManager.delete(vendorId, requestUser.getUsername(), requestUser.id());
 
     return VendorDeleteResponse.from(vendor);
+  }
+
+  /**
+   * 특정 업체의 담당자를 조회한다.
+   *
+   * <p>조회 권한은 MASTER_MANAGER, HUB_MANAGER, SHIPPING_AGENT, VENDOR_AGENT가 포함된다.
+   *
+   * @param vendorId 조회할 업체의 식별자(UUID)
+   * @return 조회된 업체 담당자 정보를 담은 {@link VendorAgentResponse}
+   */
+  @PreAuthorize("hasAnyRole('MASTER_MANAGER', 'HUB_MANAGER', 'SHIPPING_AGENT', 'VENDOR_AGENT')")
+  @GetMapping("/v1/vendors/{vendorId}/agent")
+  public VendorAgentResponse findAgent(@PathVariable UUID vendorId) {
+    VendorAgent agent = vendorFinder.findAgent(vendorId);
+
+    return VendorAgentResponse.of(agent);
+  }
+
+  /**
+   * 특정 업체의 담당자를 변경한다.
+   *
+   * <p>변경 권한은 MASTER_MANAGER, HUB_MANAGER, VENDOR_AGENT가 포함된다.
+   *
+   * @param requestUser 인증된 사용자 정보
+   * @param vendorId 변경할 업체의 식별자(UUID)
+   * @param changeRequest 새로운 업체 담당자 ID
+   */
+  @PreAuthorize("hasAnyRole('MASTER_MANAGER', 'HUB_MANAGER', 'VENDOR_AGENT')")
+  @PutMapping("/v1/vendors/{vendorId}/agent")
+  public void changeAgent(
+      @AuthenticationPrincipal AuthenticatedUser requestUser,
+      @PathVariable UUID vendorId,
+      @RequestBody VendorAgentChangeRequest changeRequest) {
+    vendorManager.changeAgent(vendorId, changeRequest.newAgentId(), requestUser.id());
   }
 }
