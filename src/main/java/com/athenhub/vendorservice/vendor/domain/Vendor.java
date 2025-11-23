@@ -1,6 +1,8 @@
 package com.athenhub.vendorservice.vendor.domain;
 
 import com.athenhub.vendorservice.global.domain.AbstractAuditEntity;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorAgentChangeRequest;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorAgentRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.exception.PermissionErrorCode;
@@ -11,12 +13,16 @@ import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -78,6 +84,10 @@ public class Vendor extends AbstractAuditEntity {
 
   @Embedded private Coordinate coordinate;
 
+  @ToString.Exclude
+  @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<VendorAgent> vendorAgents = new ArrayList<>();
+
   /**
    * 업체를 등록한다.
    *
@@ -95,6 +105,7 @@ public class Vendor extends AbstractAuditEntity {
    */
   public static Vendor register(
       VendorRegisterRequest registerRequest,
+      VendorAgentRegisterRequest agentRegisterRequest,
       PermissionChecker permissionChecker,
       HubExistenceChecker hubExistenceChecker,
       UUID requestId) {
@@ -112,6 +123,9 @@ public class Vendor extends AbstractAuditEntity {
     vendor.hubId = hubId;
     vendor.address = Address.of(registerRequest.streetAddress(), registerRequest.detailAddress());
     vendor.coordinate = Coordinate.of(registerRequest.latitude(), registerRequest.longitude());
+
+    VendorAgent agent = VendorAgent.register(agentRegisterRequest);
+    vendor.addVendorAgent(agent);
 
     return vendor;
   }
@@ -160,6 +174,28 @@ public class Vendor extends AbstractAuditEntity {
     checkManagePermission(this.hubId, permissionChecker, requestId);
 
     super.delete(deletedBy);
+  }
+
+  public void changeAgent(String changeBy, VendorAgentChangeRequest changeRequest, PermissionChecker permissionChecker, UUID requestId) {
+    checkManagePermission(this.hubId, permissionChecker, requestId);
+
+    VendorAgent currentAgent = getAgent();
+    currentAgent.delete(changeBy);
+
+    VendorAgent newAgent = VendorAgent.register(VendorAgentRegisterRequest.of(changeRequest));
+    addVendorAgent(newAgent);
+  }
+
+  private void addVendorAgent(VendorAgent agent) {
+    this.vendorAgents.add(agent);
+    agent.assignTo(this);
+  }
+
+  public VendorAgent getAgent() {
+    return this.vendorAgents.stream()
+        .filter(v -> Objects.isNull(v.getDeletedAt()))
+        .findFirst()
+        .orElse(null);
   }
 
   private static void checkManagePermission(
