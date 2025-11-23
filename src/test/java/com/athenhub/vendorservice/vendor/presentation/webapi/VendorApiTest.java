@@ -154,7 +154,7 @@ class VendorApiTest {
   }
 
   @Test
-  @MockUser(roles = "VENDOR_AGENT")
+  @MockUser(roles = "SHIPPING_AGENT")
   void updateIfUnauthorized() throws JsonProcessingException {
     VendorUpdateRequest request = VendorFixture.createUpdateRequest();
 
@@ -192,7 +192,7 @@ class VendorApiTest {
   }
 
   @Test
-  @MockUser(roles = "VENDOR_AGENT")
+  @MockUser(roles = "SHIPPING_AGENT")
   void deleteIfUnauthorized() {
     Vendor vendor =
         VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);

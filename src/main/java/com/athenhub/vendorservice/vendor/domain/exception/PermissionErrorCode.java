@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
  *
  * <ul>
  *   <li>{@link #HAS_NOT_REGISTER_PERMISSION} — 업체 등록 권한이 없는 경우
- *   <li>{@link #HAS_NOT_MANAGE_PERMISSION} — 업체 관리 권한이 없는 경우
+ *   <li>{@link #HAS_NOT_UPDATE_PERMISSION} — 업체 관리 권한이 없는 경우
  * </ul>
  *
  * @author 김형섭
@@ -22,7 +22,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum PermissionErrorCode implements ErrorCode {
   HAS_NOT_REGISTER_PERMISSION(HttpStatus.FORBIDDEN.value(), "HAS_NOT_REGISTER_PERMISSION"),
-  HAS_NOT_MANAGE_PERMISSION(HttpStatus.FORBIDDEN.value(), "HAS_NOT_MANAGE_PERMISSION");
+  HAS_NOT_UPDATE_PERMISSION(HttpStatus.FORBIDDEN.value(), "HAS_NOT_UPDATE_PERMISSION"),
+  HAS_NOT_DELETE_PERMISSION(HttpStatus.FORBIDDEN.value(), "HAS_NOT_DELETE_PERMISSION");
 
   private final int status;
   private final String code;

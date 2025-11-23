@@ -31,7 +31,7 @@ class PermissionCheckServiceTest {
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
-    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+    assertThat(permissionChecker.hasUpdatePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
         .isTrue();
   }
 
@@ -45,7 +45,7 @@ class PermissionCheckServiceTest {
     HubManager hubManager = new HubManager(memberId, "테스트 회원", "testMember", "testSlackId");
     when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
 
-    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isTrue();
+    assertThat(permissionChecker.hasUpdatePermission(memberInfo.id(), HubId.of(hubId))).isTrue();
   }
 
   @Test
@@ -59,7 +59,7 @@ class PermissionCheckServiceTest {
         new HubManager(UUID.randomUUID(), "테스트 회원", "testMember", "testSlackId");
     when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
 
-    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isFalse();
+    assertThat(permissionChecker.hasUpdatePermission(memberInfo.id(), HubId.of(hubId))).isFalse();
   }
 
   @Test
@@ -68,7 +68,7 @@ class PermissionCheckServiceTest {
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
-    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+    assertThat(permissionChecker.hasUpdatePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
         .isFalse();
   }
 

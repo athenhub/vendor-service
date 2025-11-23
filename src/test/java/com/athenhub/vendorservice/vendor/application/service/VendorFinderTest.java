@@ -76,7 +76,7 @@ class VendorFinderTest {
     vendor9 = registerVendor("테스트 업체9", hubId1, VendorType.PRODUCER, "서울시 테스트로 1", "A호");
     vendor10 = registerVendor("테스트 업체10", hubId2, VendorType.PRODUCER, "서울시 테스트로 1", "A호");
 
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasDeletePermission(any(), any(HubId.class))).thenReturn(true);
     vendorManager.delete(vendor1.getId().toUuid(), "test", UUID.randomUUID());
     vendorManager.delete(vendor2.getId().toUuid(), "test", UUID.randomUUID());
   }

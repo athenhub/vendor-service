@@ -127,7 +127,7 @@ class VendorTest {
   void updateInfo() {
     VendorUpdateRequest request = createUpdateRequest();
 
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
 
     vendor.updateInfo(request, permissionChecker, hubExistenceChecker, requestId);
@@ -145,7 +145,7 @@ class VendorTest {
   void updateInfoHasNotPermission() {
     VendorUpdateRequest request = createUpdateRequest();
 
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(false);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(
             () -> vendor.updateInfo(request, permissionChecker, hubExistenceChecker, requestId))
@@ -156,7 +156,7 @@ class VendorTest {
   void updateInfoIfHubNotExists() {
     VendorUpdateRequest request = createUpdateRequest();
 
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(
@@ -166,7 +166,7 @@ class VendorTest {
 
   @Test
   void delete() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasDeletePermission(any(), any(HubId.class))).thenReturn(true);
 
     vendor.delete("test", permissionChecker, requestId);
 
@@ -176,7 +176,7 @@ class VendorTest {
 
   @Test
   void deleteHasNotPermission() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(false);
+    when(permissionChecker.hasDeletePermission(any(), any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(() -> vendor.delete("test", permissionChecker, requestId))
         .isInstanceOf(PermissionException.class);
@@ -192,7 +192,7 @@ class VendorTest {
 
   @Test
   void changeAgent() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
 
     UUID newAgentId = UUID.randomUUID();
@@ -203,7 +203,7 @@ class VendorTest {
 
   @Test
   void changeAgentHasNotPermission() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(false);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(
             () ->
@@ -214,7 +214,7 @@ class VendorTest {
 
   @Test
   void changeAgentIfMemberNotExists() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasUpdatePermission(any(), any(HubId.class))).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(false);
 
     assertThatThrownBy(

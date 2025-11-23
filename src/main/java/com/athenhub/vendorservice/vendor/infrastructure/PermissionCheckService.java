@@ -50,7 +50,12 @@ public class PermissionCheckService implements PermissionChecker {
   }
 
   @Override
-  public boolean hasManagePermission(UUID requestId, HubId hubId) {
+  public boolean hasUpdatePermission(UUID requestId, HubId hubId) {
+    return hasRegisterPermission(requestId, hubId);
+  }
+
+  @Override
+  public boolean hasDeletePermission(UUID requestId, HubId hubId) {
     return hasRegisterPermission(requestId, hubId);
   }
 
