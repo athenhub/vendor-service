@@ -112,7 +112,7 @@ public class Vendor extends AbstractAuditEntity {
 
     HubId hubId = HubId.of(registerRequest.hubId());
 
-    checkManagePermission(hubId, permissionChecker, requestId);
+    checkRegisterPermission(hubId, permissionChecker, requestId);
     checkHubExistence(hubId, hubExistenceChecker);
 
     Vendor vendor = new Vendor();
@@ -196,6 +196,13 @@ public class Vendor extends AbstractAuditEntity {
         .filter(v -> Objects.isNull(v.getDeletedAt()))
         .findFirst()
         .orElse(null);
+  }
+
+  private static void checkRegisterPermission(
+      HubId hubId, PermissionChecker permissionChecker, UUID requestId) {
+    if (!permissionChecker.hasRegisterPermission(requestId, hubId)) {
+      throw new PermissionException(PermissionErrorCode.HAS_NOT_REGISTER_PERMISSION);
+    }
   }
 
   private static void checkManagePermission(

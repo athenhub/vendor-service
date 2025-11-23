@@ -84,7 +84,7 @@ class VendorManagerTest {
   }
 
   private Vendor registerVendor() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);
 
     Vendor vendor = vendorRegister.register(createRegisterRequest(), requestId);
