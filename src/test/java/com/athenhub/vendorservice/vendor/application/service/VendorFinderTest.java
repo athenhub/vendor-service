@@ -9,6 +9,7 @@ import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorType;
 import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import jakarta.persistence.EntityManager;
@@ -43,6 +44,8 @@ class VendorFinderTest {
   @MockitoBean private PermissionChecker permissionChecker;
 
   @MockitoBean private HubExistenceChecker hubExistenceChecker;
+
+  @MockitoBean private MemberExistenceChecker memberExistenceChecker;
 
   private final UUID requestId = UUID.randomUUID();
 
@@ -219,8 +222,10 @@ class VendorFinderTest {
       String name, UUID hubId, VendorType type, String streetAddress, String detailAddress) {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);
+    when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
 
     return vendorRegister.register(
-        createRegisterRequest(name, hubId, type, streetAddress, detailAddress), requestId);
+        createRegisterRequest(name, hubId, type, streetAddress, detailAddress, UUID.randomUUID()),
+        requestId);
   }
 }

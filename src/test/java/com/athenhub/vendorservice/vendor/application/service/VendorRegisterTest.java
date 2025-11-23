@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
+import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
 import java.util.UUID;
@@ -25,13 +26,17 @@ class VendorRegisterTest {
 
   @MockitoBean HubExistenceChecker hubExistenceChecker;
 
+  @MockitoBean MemberExistenceChecker memberExistenceChecker;
+
   @Test
   void register() {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
+    when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
 
     Vendor vendor = vendorRegister.register(createRegisterRequest(), UUID.randomUUID());
 
     assertThat(vendor.getId()).isNotNull();
+    assertThat(vendor.getAgentId()).isNotNull();
   }
 }

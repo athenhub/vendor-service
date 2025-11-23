@@ -3,6 +3,8 @@ package com.athenhub.vendorservice.vendor.application.service;
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorRepository;
 import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
+import com.athenhub.vendorservice.vendor.domain.service.VendorAgentInfoFinder;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class VendorQueryService implements VendorFinder {
 
   private final VendorRepository vendorRepository;
+  private final VendorAgentInfoFinder vendorAgentInfoFinder;
 
   @Override
   public Vendor find(UUID vendorId) {
@@ -58,5 +61,12 @@ public class VendorQueryService implements VendorFinder {
         keyword,
         searchCondition.includeDeleted(),
         pageable);
+  }
+
+  @Override
+  public VendorAgent findAgent(UUID vendorId) {
+    Vendor vendor = find(vendorId);
+
+    return vendor.getAgentInfo(vendorAgentInfoFinder);
   }
 }
