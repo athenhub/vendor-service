@@ -3,6 +3,7 @@ package com.athenhub.vendorservice.vendor.domain;
 import static com.athenhub.vendorservice.vendor.VendorFixture.create;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateRequest;
+import static com.athenhub.vendorservice.vendor.VendorFixture.getAgent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,9 +15,12 @@ import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
+import com.athenhub.vendorservice.vendor.domain.service.VendorAgentInfoFinder;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgentId;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +36,8 @@ class VendorTest {
   @Mock HubExistenceChecker hubExistenceChecker;
 
   @Mock MemberExistenceChecker memberExistenceChecker;
+
+  @Mock VendorAgentInfoFinder vendorAgentInfoFinder;
 
   Vendor vendor;
 
@@ -174,5 +180,13 @@ class VendorTest {
 
     assertThatThrownBy(() -> vendor.delete("test", permissionChecker, requestId))
         .isInstanceOf(PermissionException.class);
+  }
+
+  @Test
+  void getAgentInfoTest() {
+    VendorAgent agent = getAgent(vendor.getAgentId());
+    when(vendorAgentInfoFinder.find(any(VendorAgentId.class))).thenReturn(agent);
+
+    assertThat(vendor.getAgentInfo(vendorAgentInfoFinder)).isEqualTo(agent);
   }
 }

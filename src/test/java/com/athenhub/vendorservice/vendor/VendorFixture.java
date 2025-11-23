@@ -11,6 +11,8 @@ import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgentId;
 import java.util.UUID;
 
 /**
@@ -25,10 +27,12 @@ import java.util.UUID;
  * <ul>
  *   <li>{@link #createRegisterRequest()} – Vendor 등록 요청 DTO 생성
  *   <li>{@link #createRegisterRequest(String, UUID, VendorType, String, String, UUID)} – 지정된 요청 기반
- *   <li>{@link #create(PermissionChecker, HubExistenceChecker, MemberExistenceChecker)} – 기본 Vendor 엔티티 생성
- *   <li>{@link #create(VendorRegisterRequest, PermissionChecker, HubExistenceChecker, MemberExistenceChecker)} – 지정된 요청 기반
- *       Vendor 생성
+ *   <li>{@link #create(PermissionChecker, HubExistenceChecker, MemberExistenceChecker)} – 기본 Vendor
+ *       엔티티 생성
+ *   <li>{@link #create(VendorRegisterRequest, PermissionChecker, HubExistenceChecker,
+ *       MemberExistenceChecker)} – 지정된 요청 기반 Vendor 생성
  *   <li>{@link #createUpdateRequest()} – Vendor 수정 요청 DTO 생성
+ *   <li>{@link #getAgent(VendorAgentId)} - VendorAgent DTO 생성
  * </ul>
  *
  * <p>이 클래스는 테스트 전용이며, 프로덕션 코드에서는 사용되지 않는다.
@@ -133,5 +137,15 @@ public class VendorFixture {
         "",
         37.490205,
         127.032838);
+  }
+
+  /**
+   * VendorAgent DTO를 생성한다.
+   *
+   * @param agentId 엄체 담당자 ID
+   * @return 생성된 {@link VendorAgent}
+   */
+  public static VendorAgent getAgent(VendorAgentId agentId) {
+    return new VendorAgent(agentId, "업체담당자", "vendorAgent", "agentSlackId");
   }
 }

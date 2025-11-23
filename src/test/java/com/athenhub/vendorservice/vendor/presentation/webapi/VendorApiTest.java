@@ -2,6 +2,7 @@ package com.athenhub.vendorservice.vendor.presentation.webapi;
 
 import static com.athenhub.vendorservice.AssertThatUtils.isEqualTo;
 import static com.athenhub.vendorservice.vendor.VendorFixture.create;
+import static com.athenhub.vendorservice.vendor.VendorFixture.getAgent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -18,6 +19,7 @@ import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
@@ -198,5 +200,23 @@ class VendorApiTest {
         mvcTester.delete().uri("/v1/vendors/{vendorId}", vendor.getId().toString()).exchange();
 
     assertThat(result).hasStatus(HttpStatus.FORBIDDEN);
+  }
+
+  @Test
+  @MockUser(roles = "MASTER_MANAGER")
+  void findAgent() {
+    VendorAgent agent = getAgent(vendor.getAgentId());
+    given(vendorFinder.findAgent(any())).willReturn(agent);
+
+    MvcTestResult result =
+        mvcTester.get().uri("/v1/vendors/{vendorId}/agent", vendor.getId().toString()).exchange();
+
+    assertThat(result)
+        .hasStatusOk()
+        .bodyJson()
+        .hasPathSatisfying("$.id", isEqualTo(agent.id().toString()))
+        .hasPathSatisfying("$.name", isEqualTo(agent.name()))
+        .hasPathSatisfying("$.username", isEqualTo(agent.username()))
+        .hasPathSatisfying("$.slackId", isEqualTo(agent.slackId()));
   }
 }

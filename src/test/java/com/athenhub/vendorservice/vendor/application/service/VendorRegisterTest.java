@@ -37,6 +37,6 @@ class VendorRegisterTest {
     Vendor vendor = vendorRegister.register(createRegisterRequest(), UUID.randomUUID());
 
     assertThat(vendor.getId()).isNotNull();
-    assertThat(vendor.getAgent()).isNotNull();
+    assertThat(vendor.getAgentId()).isNotNull();
   }
 }

@@ -8,9 +8,11 @@ import com.athenhub.vendorservice.vendor.domain.exception.PermissionException;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
+import com.athenhub.vendorservice.vendor.domain.service.VendorAgentInfoFinder;
 import com.athenhub.vendorservice.vendor.domain.vo.Address;
 import com.athenhub.vendorservice.vendor.domain.vo.Coordinate;
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorAgentId;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorId;
 import jakarta.persistence.Embedded;
@@ -80,7 +82,7 @@ public class Vendor extends AbstractAuditEntity {
 
   @Embedded private Coordinate coordinate;
 
-  @Embedded private VendorAgentId agent;
+  @Embedded private VendorAgentId agentId;
 
   /**
    * 업체를 등록한다.
@@ -119,7 +121,7 @@ public class Vendor extends AbstractAuditEntity {
     vendor.hubId = hubId;
     vendor.address = Address.of(registerRequest.streetAddress(), registerRequest.detailAddress());
     vendor.coordinate = Coordinate.of(registerRequest.latitude(), registerRequest.longitude());
-    vendor.agent = VendorAgentId.of(registerRequest.agentId());
+    vendor.agentId = VendorAgentId.of(registerRequest.agentId());
 
     return vendor;
   }
@@ -168,6 +170,16 @@ public class Vendor extends AbstractAuditEntity {
     checkManagePermission(this.hubId, permissionChecker, requestId);
 
     super.delete(deletedBy);
+  }
+
+  /**
+   * 업체 담당자 정보를 조회한다.
+   *
+   * @param agentFinder 업체 담당자 정보 조회 인터페이스
+   * @return 업체 담당자 정보
+   */
+  public VendorAgent getAgentInfo(VendorAgentInfoFinder agentFinder) {
+    return agentFinder.find(this.agentId);
   }
 
   private static void checkRegisterPermission(
