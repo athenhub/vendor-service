@@ -105,7 +105,6 @@ public class Vendor extends AbstractAuditEntity {
    */
   public static Vendor register(
       VendorRegisterRequest registerRequest,
-      VendorAgentRegisterRequest agentRegisterRequest,
       PermissionChecker permissionChecker,
       HubExistenceChecker hubExistenceChecker,
       UUID requestId) {
@@ -124,7 +123,7 @@ public class Vendor extends AbstractAuditEntity {
     vendor.address = Address.of(registerRequest.streetAddress(), registerRequest.detailAddress());
     vendor.coordinate = Coordinate.of(registerRequest.latitude(), registerRequest.longitude());
 
-    VendorAgent agent = VendorAgent.register(agentRegisterRequest);
+    VendorAgent agent = VendorAgent.register(registerRequest.agent());
     vendor.addVendorAgent(agent);
 
     return vendor;

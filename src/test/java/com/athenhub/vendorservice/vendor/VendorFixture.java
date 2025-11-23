@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorType;
+import com.athenhub.vendorservice.vendor.domain.dto.request.VendorAgentRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
@@ -62,8 +63,10 @@ public class VendorFixture {
    */
   public static VendorRegisterRequest createRegisterRequest(
       String name, UUID hubId, VendorType type, String streetAddress, String detailAddress) {
+    VendorAgentRegisterRequest agent = new VendorAgentRegisterRequest(
+        UUID.randomUUID(), "업체담당자", "vendorAgent", "agentSlackId");
     return new VendorRegisterRequest(
-        name, hubId, type, streetAddress, detailAddress, 37.489662, 127.032855);
+        name, hubId, type, streetAddress, detailAddress, 37.489662, 127.032855, agent);
   }
 
   /**

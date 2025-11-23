@@ -21,6 +21,7 @@ import java.util.UUID;
  *   <li>{@code detailAddress} — 상세 주소 (선택)
  *   <li>{@code latitude} — 위도 (필수)
  *   <li>{@code longitude} — 경도 (필수)
+ *   <li>{@code }</li>
  * </ul>
  *
  * @author 김형섭
@@ -33,4 +34,5 @@ public record VendorRegisterRequest(
     @NotBlank String streetAddress,
     String detailAddress,
     @NotNull Double latitude,
-    @NotNull Double longitude) {}
+    @NotNull Double longitude,
+    @NotNull VendorAgentRegisterRequest agent) {}
