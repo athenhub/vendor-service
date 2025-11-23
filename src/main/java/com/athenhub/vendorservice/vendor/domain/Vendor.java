@@ -192,7 +192,11 @@ public class Vendor extends AbstractAuditEntity {
    * @throws PermissionException 관리 권한이 없는 경우
    * @throws IllegalArgumentException 회원이 존재하지 않는 경우
    */
-  public void changeAgent(UUID newAgentId, PermissionChecker permissionChecker, MemberExistenceChecker memberExistenceChecker, UUID requestId) {
+  public void changeAgent(
+      UUID newAgentId,
+      PermissionChecker permissionChecker,
+      MemberExistenceChecker memberExistenceChecker,
+      UUID requestId) {
     checkManagePermission(this.hubId, permissionChecker, requestId);
     checkMemberExistence(newAgentId, memberExistenceChecker);
 

@@ -86,6 +86,21 @@ class VendorManagerTest {
     assertThat(vendor.getDeletedAt()).isNotNull();
   }
 
+  @Test
+  void changeAgent() {
+    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
+
+    UUID newAgentId = UUID.randomUUID();
+    vendorManager.changeAgent(vendor.getId().toUuid(), newAgentId, requestId);
+    entityManager.flush();
+    entityManager.clear();
+
+    vendor = vendorFinder.find(vendor.getId().toUuid());
+
+    assertThat(vendor.getAgentId().toUuid()).isEqualTo(newAgentId);
+  }
+
   private Vendor registerVendor() {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);

@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 
 import com.athenhub.vendorservice.MockUser;
 import com.athenhub.vendorservice.vendor.VendorFixture;
@@ -20,6 +21,7 @@ import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
 import com.athenhub.vendorservice.vendor.domain.vo.VendorAgent;
+import com.athenhub.vendorservice.vendor.presentation.webapi.dto.VendorAgentChangeRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
@@ -218,5 +220,41 @@ class VendorApiTest {
         .hasPathSatisfying("$.name", isEqualTo(agent.name()))
         .hasPathSatisfying("$.username", isEqualTo(agent.username()))
         .hasPathSatisfying("$.slackId", isEqualTo(agent.slackId()));
+  }
+
+  @Test
+  @MockUser(roles = "MASTER_MANAGER")
+  void changeAgent() throws JsonProcessingException {
+    VendorAgentChangeRequest request = new VendorAgentChangeRequest(UUID.randomUUID());
+    doNothing().when(vendorManager).changeAgent(any(), any(), any());
+    String requestJson = objectMapper.writeValueAsString(request);
+
+    MvcTestResult result =
+        mvcTester
+            .put()
+            .uri("/v1/vendors/{vendorId}/agent", vendor.getId().toString())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestJson)
+            .exchange();
+
+    assertThat(result).hasStatusOk();
+  }
+
+  @Test
+  @MockUser(roles = "SHIPPING_AGENT")
+  void changeAgentIfUnauthorized() throws JsonProcessingException {
+    VendorAgentChangeRequest request = new VendorAgentChangeRequest(UUID.randomUUID());
+    doNothing().when(vendorManager).changeAgent(any(), any(), any());
+    String requestJson = objectMapper.writeValueAsString(request);
+
+    MvcTestResult result =
+        mvcTester
+            .put()
+            .uri("/v1/vendors/{vendorId}/agent", vendor.getId().toString())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestJson)
+            .exchange();
+
+    assertThat(result).hasStatus(HttpStatus.FORBIDDEN);
   }
 }

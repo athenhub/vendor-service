@@ -76,4 +76,11 @@ public class VendorManageService implements VendorRegister, VendorManager {
 
     return vendorRepository.save(vendor);
   }
+
+  @Override
+  public void changeAgent(UUID vendorId, UUID newAgentId, UUID requestId) {
+    Vendor vendor = vendorFinder.find(vendorId);
+
+    vendor.changeAgent(newAgentId, permissionChecker, memberExistenceChecker, requestId);
+  }
 }
