@@ -41,7 +41,7 @@ class VendorTest {
 
   @Test
   void register() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
 
     VendorRegisterRequest request = createRegisterRequest();
@@ -61,7 +61,7 @@ class VendorTest {
   void registerHasNotPermission() {
     VendorRegisterRequest request = createRegisterRequest();
 
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(false);
+    when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(
             () -> Vendor.register(request, permissionChecker, hubExistenceChecker, requestId))
@@ -72,7 +72,7 @@ class VendorTest {
   void registerIfHubNotExists() {
     VendorRegisterRequest request = createRegisterRequest();
 
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(false);
 
     assertThatThrownBy(

@@ -27,7 +27,7 @@ class VendorRegisterTest {
 
   @Test
   void register() {
-    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
 
     Vendor vendor = vendorRegister.register(createRegisterRequest(), UUID.randomUUID());

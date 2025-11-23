@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
  * <p>각 상수는 HTTP 상태 코드와 고유 코드 문자열을 포함한다.
  *
  * <ul>
+ *   <li>{@link #HAS_NOT_REGISTER_PERMISSION} — 업체 등록 권한이 없는 경우
  *   <li>{@link #HAS_NOT_MANAGE_PERMISSION} — 업체 관리 권한이 없는 경우
  * </ul>
  *
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
  */
 @RequiredArgsConstructor
 public enum PermissionErrorCode implements ErrorCode {
+  HAS_NOT_REGISTER_PERMISSION(HttpStatus.FORBIDDEN.value(), "HAS_NOT_REGISTER_PERMISSION"),
   HAS_NOT_MANAGE_PERMISSION(HttpStatus.FORBIDDEN.value(), "HAS_NOT_MANAGE_PERMISSION");
 
   private final int status;
