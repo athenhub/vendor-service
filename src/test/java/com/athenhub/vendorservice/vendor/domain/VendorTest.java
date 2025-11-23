@@ -4,6 +4,7 @@ import static com.athenhub.vendorservice.vendor.VendorFixture.create;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateRequest;
 import static com.athenhub.vendorservice.vendor.VendorFixture.getAgent;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -189,4 +190,35 @@ class VendorTest {
 
     assertThat(vendor.getAgentInfo(vendorAgentInfoFinder)).isEqualTo(agent);
   }
+
+  @Test
+  void changeAgent() {
+      when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+      when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
+
+      UUID newAgentId = UUID.randomUUID();
+      vendor.changeAgent(newAgentId, permissionChecker, memberExistenceChecker, requestId);
+
+      assertThat(vendor.getAgentId()).isEqualTo(VendorAgentId.of(newAgentId));
+  }
+
+  @Test
+  void changeAgentHasNotPermission() {
+    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(false);
+
+    assertThatThrownBy(() -> vendor.changeAgent(UUID.randomUUID(), permissionChecker,
+        memberExistenceChecker, requestId))
+        .isInstanceOf(PermissionException.class);
+  }
+
+  @Test
+  void changeAgentIfMemberNotExists() {
+    when(permissionChecker.hasManagePermission(any(), any(HubId.class))).thenReturn(true);
+    when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(false);
+
+    assertThatThrownBy(() -> vendor.changeAgent(UUID.randomUUID(), permissionChecker,
+        memberExistenceChecker, requestId))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
 }

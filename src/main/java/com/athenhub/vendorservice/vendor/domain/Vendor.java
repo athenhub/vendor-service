@@ -98,7 +98,7 @@ public class Vendor extends AbstractAuditEntity {
    * @return 등록된 업체 엔티티
    * @throws NullPointerException 필수 입력 값이 누락된 경우
    * @throws PermissionException 등록 권한이 없는 경우
-   * @throws IllegalArgumentException 허브가 존재하지 않는 경우
+   * @throws IllegalArgumentException 허브 또는 멤버가 존재하지 않는 경우
    */
   public static Vendor register(
       VendorRegisterRequest registerRequest,
@@ -180,6 +180,23 @@ public class Vendor extends AbstractAuditEntity {
    */
   public VendorAgent getAgentInfo(VendorAgentInfoFinder agentFinder) {
     return agentFinder.find(this.agentId);
+  }
+
+  /**
+   * 업체 담당자를 변경한다.
+   *
+   * @param newAgentId 새로운 업채 담당자 ID
+   * @param permissionChecker 권한 검증 인터페이스
+   * @param memberExistenceChecker 회원 존재 여부 검증 인터페이스
+   * @param requestId 요청자 식별자(UUID)
+   * @throws PermissionException 관리 권한이 없는 경우
+   * @throws IllegalArgumentException 회원이 존재하지 않는 경우
+   */
+  public void changeAgent(UUID newAgentId, PermissionChecker permissionChecker, MemberExistenceChecker memberExistenceChecker, UUID requestId) {
+    checkManagePermission(this.hubId, permissionChecker, requestId);
+    checkMemberExistence(newAgentId, memberExistenceChecker);
+
+    this.agentId = VendorAgentId.of(newAgentId);
   }
 
   private static void checkRegisterPermission(
