@@ -67,7 +67,7 @@ public class PermissionCheckService implements PermissionChecker {
    * @return 활성 Master Manager이면 {@code true}, 아니면 {@code false}
    */
   private boolean isActiveMasterManager(MemberInfo member) {
-    return MemberRole.MASTER_MANAGER.equals(member.role()) && Objects.isNull(member.deletedAt());
+    return MemberRole.MASTER_MANAGER.equals(member.role()) && member.isActivated();
   }
 
   /**
@@ -90,13 +90,13 @@ public class PermissionCheckService implements PermissionChecker {
   /**
    * 요청자가 활성 상태의 Hub Manager 역할인지 확인한다.
    *
-   * <p>Hub Manager 역할이며, 논리적으로 삭제되지 않은(deletedAt 값이 없는) 경우에만 활성 사용자로 판단한다.
+   * <p>Hub Manager 역할이며, 활성 상태인 경우에만 활성 사용자로 판단한다.
    *
    * @param member 회원 정보 객체
    * @return 활성 Hub Manager이면 {@code true}, 아니면 {@code false}
    */
   private boolean isActiveHubManager(MemberInfo member) {
-    return MemberRole.HUB_MANAGER.equals(member.role()) && Objects.isNull(member.deletedAt());
+    return MemberRole.HUB_MANAGER.equals(member.role()) && member.isActivated();
   }
 
   /**
