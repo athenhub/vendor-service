@@ -4,6 +4,7 @@ import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequ
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
@@ -44,5 +45,6 @@ class VendorRegisterTest {
 
     assertThat(vendor.getId()).isNotNull();
     assertThat(vendor.getAgentId()).isNotNull();
+    verify(vendorEventPublisher).publish(any(VendorRegistered.class));
   }
 }

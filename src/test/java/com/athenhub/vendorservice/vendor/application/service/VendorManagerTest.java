@@ -5,11 +5,15 @@ import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateReques
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.event.VendorAgentChanged;
+import com.athenhub.vendorservice.vendor.domain.event.VendorDeleted;
 import com.athenhub.vendorservice.vendor.domain.event.VendorRegistered;
+import com.athenhub.vendorservice.vendor.domain.event.VendorUpdated;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
@@ -62,7 +66,7 @@ class VendorManagerTest {
     when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
 
-    vendorManager.updateInfo(vendor.getId().toUuid(), request, requestId);
+    vendorManager.updateInfo(vendor.getId().toUuid(), request, requestId, requestUser);
     entityManager.flush();
     entityManager.clear();
 
@@ -75,13 +79,14 @@ class VendorManagerTest {
         .isEqualTo(Address.of(request.streetAddress(), request.detailAddress()));
     assertThat(vendor.getCoordinate())
         .isEqualTo(Coordinate.of(request.latitude(), request.longitude()));
+    verify(vendorEventPublisher).publish(any(VendorUpdated.class));
   }
 
   @Test
   void delete() {
     when(permissionChecker.hasDeletePermission(any(), any(HubId.class))).thenReturn(true);
 
-    vendorManager.delete(vendor.getId().toUuid(), "requestUser", requestId);
+    vendorManager.delete(vendor.getId().toUuid(), "requestUser", requestId, requestUser);
     entityManager.flush();
     entityManager.clear();
 
@@ -89,6 +94,7 @@ class VendorManagerTest {
 
     assertThat(vendor.getDeletedBy()).isEqualTo("requestUser");
     assertThat(vendor.getDeletedAt()).isNotNull();
+    verify(vendorEventPublisher).publish(any(VendorDeleted.class));
   }
 
   @Test
@@ -97,13 +103,14 @@ class VendorManagerTest {
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
 
     UUID newAgentId = UUID.randomUUID();
-    vendorManager.changeAgent(vendor.getId().toUuid(), newAgentId, requestId);
+    vendorManager.changeAgent(vendor.getId().toUuid(), newAgentId, requestId, requestUser);
     entityManager.flush();
     entityManager.clear();
 
     vendor = vendorFinder.find(vendor.getId().toUuid());
 
     assertThat(vendor.getAgentId().toUuid()).isEqualTo(newAgentId);
+    verify(vendorEventPublisher).publish(any(VendorAgentChanged.class));
   }
 
   private Vendor registerVendor() {
