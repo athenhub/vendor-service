@@ -6,10 +6,10 @@ import java.util.UUID;
 /**
  * 업체 정보가 수정되었음을 나타내는 도메인 이벤트.
  *
- * <p>업체의 이름 또는 담당자 정보 등이 변경되었을 때 발행된다.
+ * <p>업체의 이름 등이 변경되었을 때 발행된다.
  *
  * @param vendorName 변경된 업체명
- * @param vendorAgentId 변경된 업체 담당자 ID
+ * @param vendorAgentId 업체 담당자 ID
  * @param requestUsername 요청을 수행한 관리자 계정명
  */
 public record VendorUpdated(String vendorName, UUID vendorAgentId, String requestUsername) {
