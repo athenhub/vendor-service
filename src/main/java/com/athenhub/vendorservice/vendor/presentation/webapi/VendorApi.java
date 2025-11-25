@@ -73,7 +73,8 @@ public class VendorApi {
   public VendorRegisterResponse register(
       @AuthenticationPrincipal AuthenticatedUser requestUser,
       @RequestBody VendorRegisterRequest registerRequest) {
-    Vendor vendor = vendorRegister.register(registerRequest, requestUser.id());
+    Vendor vendor =
+        vendorRegister.register(registerRequest, requestUser.id(), requestUser.username());
 
     return VendorRegisterResponse.from(vendor);
   }

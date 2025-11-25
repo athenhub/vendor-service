@@ -28,7 +28,11 @@ public interface VendorRegister {
    *
    * @param registerRequest 등록 요청 DTO (필수, 유효성 검사 적용)
    * @param requestId 요청자 ID (필수)
+   * @param requestUsername 요청자 계정 (필수)
    * @return 생성된 {@link Vendor} 엔티티
    */
-  Vendor register(@Valid VendorRegisterRequest registerRequest, @NotNull UUID requestId);
+  Vendor register(
+      @Valid VendorRegisterRequest registerRequest,
+      @NotNull UUID requestId,
+      @NotNull String requestUsername);
 }

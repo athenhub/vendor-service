@@ -4,10 +4,12 @@ import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequ
 import static com.athenhub.vendorservice.vendor.VendorFixture.createUpdateRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.event.VendorRegistered;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
@@ -41,9 +43,12 @@ class VendorManagerTest {
 
   @MockitoBean private MemberExistenceChecker memberExistenceChecker;
 
+  @MockitoBean private VendorEventPublisher vendorEventPublisher;
+
   Vendor vendor;
 
   private final UUID requestId = UUID.randomUUID();
+  private final String requestUser = "requestUser";
 
   @BeforeEach
   void setUp() {
@@ -105,8 +110,9 @@ class VendorManagerTest {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
+    doNothing().when(vendorEventPublisher).publish(any(VendorRegistered.class));
 
-    Vendor vendor = vendorRegister.register(createRegisterRequest(), requestId);
+    Vendor vendor = vendorRegister.register(createRegisterRequest(), requestId, requestUser);
     entityManager.flush();
     entityManager.clear();
 

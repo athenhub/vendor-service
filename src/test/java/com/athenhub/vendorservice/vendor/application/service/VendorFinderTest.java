@@ -3,11 +3,13 @@ package com.athenhub.vendorservice.vendor.application.service;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorType;
 import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
+import com.athenhub.vendorservice.vendor.domain.event.VendorRegistered;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
@@ -46,6 +48,8 @@ class VendorFinderTest {
   @MockitoBean private HubExistenceChecker hubExistenceChecker;
 
   @MockitoBean private MemberExistenceChecker memberExistenceChecker;
+
+  @MockitoBean private VendorEventPublisher vendorEventPublisher;
 
   private final UUID requestId = UUID.randomUUID();
 
@@ -223,9 +227,11 @@ class VendorFinderTest {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
+    doNothing().when(vendorEventPublisher).publish(any(VendorRegistered.class));
 
     return vendorRegister.register(
         createRegisterRequest(name, hubId, type, streetAddress, detailAddress, UUID.randomUUID()),
-        requestId);
+        requestId,
+        "requestUser");
   }
 }

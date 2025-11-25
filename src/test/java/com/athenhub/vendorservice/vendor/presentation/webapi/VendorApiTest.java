@@ -73,7 +73,8 @@ class VendorApiTest {
     vendor =
         VendorFixture.create(
             request, permissionChecker, hubExistenceChecker, memberExistenceChecker);
-    given(vendorRegister.register(any(VendorRegisterRequest.class), any())).willReturn(vendor);
+    given(vendorRegister.register(any(VendorRegisterRequest.class), any(), anyString()))
+        .willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
 
     MvcTestResult result =
@@ -98,7 +99,8 @@ class VendorApiTest {
     Vendor vendor =
         VendorFixture.create(
             request, permissionChecker, hubExistenceChecker, memberExistenceChecker);
-    given(vendorRegister.register(any(VendorRegisterRequest.class), any())).willReturn(vendor);
+    given(vendorRegister.register(any(VendorRegisterRequest.class), any(), anyString()))
+        .willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
 
     MvcTestResult result =
