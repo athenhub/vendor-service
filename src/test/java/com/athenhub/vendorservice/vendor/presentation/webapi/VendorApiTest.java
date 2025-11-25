@@ -58,8 +58,6 @@ class VendorApiTest {
 
   Vendor vendor;
 
-  private final UUID requestId = UUID.randomUUID();
-
   @BeforeEach
   void setUp() {
     vendor = create(permissionChecker, hubExistenceChecker, memberExistenceChecker);

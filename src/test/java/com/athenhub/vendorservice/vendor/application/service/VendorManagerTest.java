@@ -65,6 +65,7 @@ class VendorManagerTest {
 
     when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
+    doNothing().when(vendorEventPublisher).publish(any(VendorUpdated.class));
 
     vendorManager.updateInfo(vendor.getId().toUuid(), request, requestId, requestUser);
     entityManager.flush();
@@ -85,6 +86,7 @@ class VendorManagerTest {
   @Test
   void delete() {
     when(permissionChecker.hasDeletePermission(any(), any(HubId.class))).thenReturn(true);
+    doNothing().when(vendorEventPublisher).publish(any(VendorDeleted.class));
 
     vendorManager.delete(vendor.getId().toUuid(), "requestUser", requestId, requestUser);
     entityManager.flush();
@@ -101,6 +103,7 @@ class VendorManagerTest {
   void changeAgent() {
     when(permissionChecker.hasUpdatePermission(any(), any(HubId.class), any())).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
+    doNothing().when(vendorEventPublisher).publish(any(VendorAgentChanged.class));
 
     UUID newAgentId = UUID.randomUUID();
     vendorManager.changeAgent(vendor.getId().toUuid(), newAgentId, requestId, requestUser);
