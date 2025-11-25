@@ -2,6 +2,7 @@ package com.athenhub.vendorservice.vendor.presentation.webapi.dto;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorType;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -21,6 +22,7 @@ import java.util.UUID;
  *   <li>addressDetail — 상세 주소
  *   <li>latitude — 위도
  *   <li>longitude — 경도
+ *   <li>isDeleted - 삭제 여부
  * </ul>
  *
  * <p>정적 메서드 {@link #from(Vendor)}를 통해 도메인 엔티티를 쉽게 응답 DTO로 변환할 수 있다.
@@ -36,7 +38,8 @@ public record VendorFindResponse(
     String streetAddress,
     String detailAddress,
     Double latitude,
-    Double longitude) {
+    Double longitude,
+    boolean isDeleted) {
 
   /**
    * 도메인 엔티티 {@link Vendor}로부터 조회 응답 객체를 생성한다.
@@ -53,6 +56,7 @@ public record VendorFindResponse(
         vendor.getAddress().getStreet(),
         vendor.getAddress().getDetail(),
         vendor.getCoordinate().getLatitude(),
-        vendor.getCoordinate().getLongitude());
+        vendor.getCoordinate().getLongitude(),
+        !Objects.isNull(vendor.getDeletedAt()));
   }
 }
