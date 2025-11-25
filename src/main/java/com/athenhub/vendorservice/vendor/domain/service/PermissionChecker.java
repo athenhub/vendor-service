@@ -1,6 +1,7 @@
 package com.athenhub.vendorservice.vendor.domain.service;
 
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgentId;
 import java.util.UUID;
 
 /**
@@ -23,11 +24,21 @@ public interface PermissionChecker {
   boolean hasRegisterPermission(UUID requestId, HubId hubId);
 
   /**
-   * 주어진 요청자가 업체 관리 권한을 가지고 있는지 확인한다.
+   * 주어진 요청자가 업체 수정 권한을 가지고 있는지 확인한다.
    *
    * @param requestId 권한 확인 대상 요청자 ID
    * @param hubId 권한 확인에 필요한 허브 식별자
-   * @return 관리 권한이 있으면 {@code true}, 없으면 {@code false}
+   * @param agentId 업체 담당자 ID
+   * @return 수정 권한이 있으면 {@code true}, 없으면 {@code false}
    */
-  boolean hasManagePermission(UUID requestId, HubId hubId);
+  boolean hasUpdatePermission(UUID requestId, HubId hubId, VendorAgentId agentId);
+
+  /**
+   * 주어진 요청자가 업체 삭제 권한을 가지고 있는지 확인한다.
+   *
+   * @param requestId 권한 확인 대상 요청자 ID
+   * @param hubId 권한 확인에 필요한 허브 식별자
+   * @return 삭제 권한이 있으면 {@code true}, 없으면 {@code false}
+   */
+  boolean hasDeletePermission(UUID requestId, HubId hubId);
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.vo.HubId;
+import com.athenhub.vendorservice.vendor.domain.vo.VendorAgentId;
 import com.athenhub.vendorservice.vendor.infrastructure.client.HubServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.client.MemberServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
@@ -26,32 +27,37 @@ class PermissionCheckServiceTest {
   @InjectMocks PermissionCheckService permissionChecker;
 
   @Test
-  void ifMasterManagerReturnTrue() {
-    MemberInfo memberInfo = createMemberInfo(UUID.randomUUID(), MemberRole.MASTER_MANAGER);
+  void registerPermissionIfMasterManagerReturnTrue() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, null, true);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
-    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+    assertThat(
+            permissionChecker.hasRegisterPermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
         .isTrue();
   }
 
   @Test
-  void ifManagerOfHubReturnTrue() {
+  void registerPermissionIfManagerOfHubReturnTrue() {
     UUID memberId = UUID.randomUUID();
-    MemberInfo memberInfo = createMemberInfo(memberId, MemberRole.HUB_MANAGER);
+    MemberInfo memberInfo =
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
     HubManager hubManager = new HubManager(memberId, "테스트 회원", "testMember", "testSlackId");
     when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
 
-    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isTrue();
+    assertThat(permissionChecker.hasRegisterPermission(memberInfo.id(), HubId.of(hubId))).isTrue();
   }
 
   @Test
-  void ifNotManagerOfHubReturnFalse() {
+  void registerPermissionIfNotManagerOfHubReturnFalse() {
     UUID memberId = UUID.randomUUID();
-    MemberInfo memberInfo = createMemberInfo(memberId, MemberRole.HUB_MANAGER);
+    MemberInfo memberInfo =
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
@@ -59,20 +65,195 @@ class PermissionCheckServiceTest {
         new HubManager(UUID.randomUUID(), "테스트 회원", "testMember", "testSlackId");
     when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
 
-    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(hubId))).isFalse();
+    assertThat(permissionChecker.hasRegisterPermission(memberInfo.id(), HubId.of(hubId))).isFalse();
   }
 
   @Test
-  void ifNotManagerReturnFalse() {
-    MemberInfo memberInfo = createMemberInfo(UUID.randomUUID(), MemberRole.SHIPPING_AGENT);
+  void registerPermissionIfNotManagerReturnFalse() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, null, true);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
-    assertThat(permissionChecker.hasManagePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+    assertThat(
+            permissionChecker.hasRegisterPermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
         .isFalse();
   }
 
-  private static MemberInfo createMemberInfo(UUID memberId, MemberRole role) {
+  @Test
+  void registerPermissionIfDeactivatedReturnFalse() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, null, false);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(
+            permissionChecker.hasRegisterPermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+        .isFalse();
+  }
+
+  @Test
+  void updatePermissionIfVendorAgentReturnTrue() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.VENDOR_AGENT, MemberStatus.ACTIVATED, null, true);
+
+    assertThat(
+            permissionChecker.hasUpdatePermission(
+                memberInfo.id(), HubId.of(UUID.randomUUID()), VendorAgentId.of(memberInfo.id())))
+        .isTrue();
+  }
+
+  @Test
+  void updatePermissionIfMasterManagerReturnTrue() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, null, true);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(
+            permissionChecker.hasUpdatePermission(
+                memberInfo.id(), HubId.of(UUID.randomUUID()), VendorAgentId.of(UUID.randomUUID())))
+        .isTrue();
+  }
+
+  @Test
+  void updatePermissionIfManagerOfHubReturnTrue() {
+    UUID memberId = UUID.randomUUID();
+    MemberInfo memberInfo =
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    UUID hubId = UUID.randomUUID();
+    HubManager hubManager = new HubManager(memberId, "테스트 회원", "testMember", "testSlackId");
+    when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
+
+    assertThat(
+            permissionChecker.hasUpdatePermission(
+                memberInfo.id(), HubId.of(hubId), VendorAgentId.of(UUID.randomUUID())))
+        .isTrue();
+  }
+
+  @Test
+  void updatePermissionIfNotManagerOfHubAndVendorAgentReturnFalse() {
+    UUID memberId = UUID.randomUUID();
+    MemberInfo memberInfo =
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    UUID hubId = UUID.randomUUID();
+    HubManager hubManager =
+        new HubManager(UUID.randomUUID(), "테스트 회원", "testMember", "testSlackId");
+    when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
+
+    assertThat(
+            permissionChecker.hasUpdatePermission(
+                memberInfo.id(), HubId.of(hubId), VendorAgentId.of(UUID.randomUUID())))
+        .isFalse();
+  }
+
+  @Test
+  void updatePermissionIfNotManagerAndVendorAgentReturnFalse() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, null, true);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(
+            permissionChecker.hasUpdatePermission(
+                memberInfo.id(), HubId.of(UUID.randomUUID()), VendorAgentId.of(UUID.randomUUID())))
+        .isFalse();
+  }
+
+  @Test
+  void updatePermissionIfDeactivatedReturnFalse() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, null, false);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(
+            permissionChecker.hasUpdatePermission(
+                memberInfo.id(), HubId.of(UUID.randomUUID()), VendorAgentId.of(UUID.randomUUID())))
+        .isFalse();
+  }
+
+  @Test
+  void deletePermissionIfMasterManagerReturnTrue() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, null, true);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(permissionChecker.hasDeletePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+        .isTrue();
+  }
+
+  @Test
+  void deletePermissionIfManagerOfHubReturnTrue() {
+    UUID memberId = UUID.randomUUID();
+    MemberInfo memberInfo =
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    UUID hubId = UUID.randomUUID();
+    HubManager hubManager = new HubManager(memberId, "테스트 회원", "testMember", "testSlackId");
+    when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
+
+    assertThat(permissionChecker.hasDeletePermission(memberInfo.id(), HubId.of(hubId))).isTrue();
+  }
+
+  @Test
+  void deletePermissionIfNotManagerOfHubReturnFalse() {
+    UUID memberId = UUID.randomUUID();
+    MemberInfo memberInfo =
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    UUID hubId = UUID.randomUUID();
+    HubManager hubManager =
+        new HubManager(UUID.randomUUID(), "테스트 회원", "testMember", "testSlackId");
+    when(hubServiceClient.getHubManager(hubId)).thenReturn(hubManager);
+
+    assertThat(permissionChecker.hasDeletePermission(memberInfo.id(), HubId.of(hubId))).isFalse();
+  }
+
+  @Test
+  void deletePermissionIfNotManagerReturnFalse() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, null, true);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(permissionChecker.hasDeletePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+        .isFalse();
+  }
+
+  @Test
+  void deletePermissionIfDeactivatedReturnFalse() {
+    MemberInfo memberInfo =
+        createMemberInfo(
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, null, false);
+
+    when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
+
+    assertThat(permissionChecker.hasDeletePermission(memberInfo.id(), HubId.of(UUID.randomUUID())))
+        .isFalse();
+  }
+
+  private static MemberInfo createMemberInfo(
+      UUID memberId,
+      MemberRole role,
+      MemberStatus status,
+      LocalDateTime deletedAt,
+      boolean isActivated) {
     return new MemberInfo(
         memberId,
         "테스트 회원",
@@ -80,10 +261,11 @@ class PermissionCheckServiceTest {
         "testSlackId",
         "서울 물류",
         role,
-        "ACTIVATE",
+        status,
         LocalDateTime.now(),
         LocalDateTime.now(),
+        deletedAt,
         null,
-        null);
+        isActivated);
   }
 }

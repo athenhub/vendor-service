@@ -128,7 +128,7 @@ public class VendorApi {
    * @param updateRequest 수정 요청 데이터
    * @return 수정된 업체 정보를 담은 {@link VendorUpdateResponse}
    */
-  @PreAuthorize("hasAnyRole('MASTER_MANAGER', 'HUB_MANAGER')")
+  @PreAuthorize("hasAnyRole('MASTER_MANAGER', 'HUB_MANAGER', 'VENDOR_AGENT')")
   @PutMapping("/v1/vendors/{vendorId}")
   public VendorUpdateResponse updateInfo(
       @AuthenticationPrincipal AuthenticatedUser requestUser,
@@ -148,7 +148,7 @@ public class VendorApi {
    * @param vendorId 삭제 대상 업체 ID
    * @return 삭제 처리된 업체 정보를 담은 {@link VendorDeleteResponse}
    */
-  @PreAuthorize("hasAnyRole('MASTER_MANAGER', 'HUB_MANAGER')")
+  @PreAuthorize("hasAnyRole('MASTER_MANAGER', 'HUB_MANAGER', 'VENDOR_AGENT')")
   @DeleteMapping("/v1/vendors/{vendorId}")
   public VendorDeleteResponse delete(
       @AuthenticationPrincipal AuthenticatedUser requestUser, @PathVariable UUID vendorId) {

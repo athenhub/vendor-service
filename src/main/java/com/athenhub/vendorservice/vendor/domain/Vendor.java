@@ -146,7 +146,7 @@ public class Vendor extends AbstractAuditEntity {
       HubExistenceChecker hubExistenceChecker,
       UUID requestId) {
 
-    checkManagePermission(this.hubId, permissionChecker, requestId);
+    checkUpdatePermission(this.hubId, permissionChecker, requestId);
     checkHubExistence(HubId.of(updateRequest.hubId()), hubExistenceChecker);
 
     this.name = updateRequest.name();
@@ -167,7 +167,7 @@ public class Vendor extends AbstractAuditEntity {
    * @throws PermissionException 관리 권한이 없는 경우
    */
   public void delete(String deletedBy, PermissionChecker permissionChecker, UUID requestId) {
-    checkManagePermission(this.hubId, permissionChecker, requestId);
+    checkDeletePermission(this.hubId, permissionChecker, requestId);
 
     super.delete(deletedBy);
   }
@@ -197,7 +197,7 @@ public class Vendor extends AbstractAuditEntity {
       PermissionChecker permissionChecker,
       MemberExistenceChecker memberExistenceChecker,
       UUID requestId) {
-    checkManagePermission(this.hubId, permissionChecker, requestId);
+    checkUpdatePermission(this.hubId, permissionChecker, requestId);
     checkMemberExistence(newAgentId, memberExistenceChecker);
 
     this.agentId = VendorAgentId.of(newAgentId);
@@ -210,10 +210,17 @@ public class Vendor extends AbstractAuditEntity {
     }
   }
 
-  private static void checkManagePermission(
+  private void checkUpdatePermission(
       HubId hubId, PermissionChecker permissionChecker, UUID requestId) {
-    if (!permissionChecker.hasManagePermission(requestId, hubId)) {
-      throw new PermissionException(PermissionErrorCode.HAS_NOT_MANAGE_PERMISSION);
+    if (!permissionChecker.hasUpdatePermission(requestId, hubId, this.agentId)) {
+      throw new PermissionException(PermissionErrorCode.HAS_NOT_UPDATE_PERMISSION);
+    }
+  }
+
+  private void checkDeletePermission(
+      HubId hubId, PermissionChecker permissionChecker, UUID requestId) {
+    if (!permissionChecker.hasDeletePermission(requestId, hubId)) {
+      throw new PermissionException(PermissionErrorCode.HAS_NOT_DELETE_PERMISSION);
     }
   }
 
