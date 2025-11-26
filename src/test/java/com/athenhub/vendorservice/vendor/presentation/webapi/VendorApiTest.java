@@ -58,8 +58,6 @@ class VendorApiTest {
 
   Vendor vendor;
 
-  private final UUID requestId = UUID.randomUUID();
-
   @BeforeEach
   void setUp() {
     vendor = create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
@@ -73,7 +71,8 @@ class VendorApiTest {
     vendor =
         VendorFixture.create(
             request, permissionChecker, hubExistenceChecker, memberExistenceChecker);
-    given(vendorRegister.register(any(VendorRegisterRequest.class), any())).willReturn(vendor);
+    given(vendorRegister.register(any(VendorRegisterRequest.class), any(), anyString()))
+        .willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
 
     MvcTestResult result =
@@ -98,7 +97,8 @@ class VendorApiTest {
     Vendor vendor =
         VendorFixture.create(
             request, permissionChecker, hubExistenceChecker, memberExistenceChecker);
-    given(vendorRegister.register(any(VendorRegisterRequest.class), any())).willReturn(vendor);
+    given(vendorRegister.register(any(VendorRegisterRequest.class), any(), anyString()))
+        .willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
 
     MvcTestResult result =
@@ -135,7 +135,7 @@ class VendorApiTest {
 
     Vendor vendor =
         VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
-    given(vendorManager.updateInfo(any(), any(VendorUpdateRequest.class), any()))
+    given(vendorManager.updateInfo(any(), any(VendorUpdateRequest.class), any(), anyString()))
         .willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
 
@@ -160,7 +160,7 @@ class VendorApiTest {
 
     Vendor vendor =
         VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
-    given(vendorManager.updateInfo(any(), any(VendorUpdateRequest.class), any()))
+    given(vendorManager.updateInfo(any(), any(VendorUpdateRequest.class), any(), anyString()))
         .willReturn(vendor);
     String requestJson = objectMapper.writeValueAsString(request);
 
@@ -180,7 +180,7 @@ class VendorApiTest {
   void delete() {
     Vendor vendor =
         VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
-    given(vendorManager.delete(any(), anyString(), any())).willReturn(vendor);
+    given(vendorManager.delete(any(), anyString(), any(), anyString())).willReturn(vendor);
 
     MvcTestResult result =
         mvcTester.delete().uri("/v1/vendors/{vendorId}", vendor.getId().toString()).exchange();
@@ -196,7 +196,7 @@ class VendorApiTest {
   void deleteIfUnauthorized() {
     Vendor vendor =
         VendorFixture.create(permissionChecker, hubExistenceChecker, memberExistenceChecker);
-    given(vendorManager.delete(any(), anyString(), any())).willReturn(vendor);
+    given(vendorManager.delete(any(), anyString(), any(), anyString())).willReturn(vendor);
 
     MvcTestResult result =
         mvcTester.delete().uri("/v1/vendors/{vendorId}", vendor.getId().toString()).exchange();
@@ -226,7 +226,7 @@ class VendorApiTest {
   @MockUser(roles = "MASTER_MANAGER")
   void changeAgent() throws JsonProcessingException {
     VendorAgentChangeRequest request = new VendorAgentChangeRequest(UUID.randomUUID());
-    doNothing().when(vendorManager).changeAgent(any(), any(), any());
+    doNothing().when(vendorManager).changeAgent(any(), any(), any(), anyString());
     String requestJson = objectMapper.writeValueAsString(request);
 
     MvcTestResult result =
@@ -244,7 +244,7 @@ class VendorApiTest {
   @MockUser(roles = "SHIPPING_AGENT")
   void changeAgentIfUnauthorized() throws JsonProcessingException {
     VendorAgentChangeRequest request = new VendorAgentChangeRequest(UUID.randomUUID());
-    doNothing().when(vendorManager).changeAgent(any(), any(), any());
+    doNothing().when(vendorManager).changeAgent(any(), any(), any(), anyString());
     String requestJson = objectMapper.writeValueAsString(request);
 
     MvcTestResult result =

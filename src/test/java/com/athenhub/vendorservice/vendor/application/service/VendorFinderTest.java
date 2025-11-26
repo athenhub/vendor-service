@@ -3,11 +3,14 @@ package com.athenhub.vendorservice.vendor.application.service;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorType;
 import com.athenhub.vendorservice.vendor.domain.dto.VendorSearchCondition;
+import com.athenhub.vendorservice.vendor.domain.event.VendorDeleted;
+import com.athenhub.vendorservice.vendor.domain.event.VendorRegistered;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
@@ -47,6 +50,8 @@ class VendorFinderTest {
 
   @MockitoBean private MemberExistenceChecker memberExistenceChecker;
 
+  @MockitoBean private VendorEventPublisher vendorEventPublisher;
+
   private final UUID requestId = UUID.randomUUID();
 
   Vendor vendor1;
@@ -77,8 +82,9 @@ class VendorFinderTest {
     vendor10 = registerVendor("테스트 업체10", hubId2, VendorType.PRODUCER, "서울시 테스트로 1", "A호");
 
     when(permissionChecker.hasDeletePermission(any(), any(HubId.class))).thenReturn(true);
-    vendorManager.delete(vendor1.getId().toUuid(), "test", UUID.randomUUID());
-    vendorManager.delete(vendor2.getId().toUuid(), "test", UUID.randomUUID());
+    doNothing().when(vendorEventPublisher).publish(any(VendorDeleted.class));
+    vendorManager.delete(vendor1.getId().toUuid(), "test", UUID.randomUUID(), "testUser");
+    vendorManager.delete(vendor2.getId().toUuid(), "test", UUID.randomUUID(), "testUser");
   }
 
   @BeforeEach
@@ -223,9 +229,10 @@ class VendorFinderTest {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any())).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
+    doNothing().when(vendorEventPublisher).publish(any(VendorRegistered.class));
 
     return vendorRegister.register(
         createRegisterRequest(name, hubId, type, streetAddress, detailAddress, UUID.randomUUID()),
-        requestId);
+        requestId, "requestUser");
   }
 }

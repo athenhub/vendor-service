@@ -3,9 +3,12 @@ package com.athenhub.vendorservice.vendor.application.service;
 import static com.athenhub.vendorservice.vendor.VendorFixture.createRegisterRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.athenhub.vendorservice.vendor.domain.Vendor;
+import com.athenhub.vendorservice.vendor.domain.event.VendorRegistered;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
@@ -28,15 +31,20 @@ class VendorRegisterTest {
 
   @MockitoBean MemberExistenceChecker memberExistenceChecker;
 
+  @MockitoBean private VendorEventPublisher vendorEventPublisher;
+
   @Test
   void register() {
     when(permissionChecker.hasRegisterPermission(any(), any(HubId.class))).thenReturn(true);
     when(hubExistenceChecker.hasHub(any(HubId.class))).thenReturn(true);
     when(memberExistenceChecker.hasMember(any(UUID.class))).thenReturn(true);
+    doNothing().when(vendorEventPublisher).publish(any(VendorRegistered.class));
 
-    Vendor vendor = vendorRegister.register(createRegisterRequest(), UUID.randomUUID());
+    Vendor vendor =
+        vendorRegister.register(createRegisterRequest(), UUID.randomUUID(), "requestUser");
 
     assertThat(vendor.getId()).isNotNull();
     assertThat(vendor.getAgentId()).isNotNull();
+    verify(vendorEventPublisher).publish(any(VendorRegistered.class));
   }
 }

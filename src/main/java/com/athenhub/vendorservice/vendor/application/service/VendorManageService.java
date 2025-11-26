@@ -4,6 +4,10 @@ import com.athenhub.vendorservice.vendor.domain.Vendor;
 import com.athenhub.vendorservice.vendor.domain.VendorRepository;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorRegisterRequest;
 import com.athenhub.vendorservice.vendor.domain.dto.request.VendorUpdateRequest;
+import com.athenhub.vendorservice.vendor.domain.event.VendorAgentChanged;
+import com.athenhub.vendorservice.vendor.domain.event.VendorDeleted;
+import com.athenhub.vendorservice.vendor.domain.event.VendorRegistered;
+import com.athenhub.vendorservice.vendor.domain.event.VendorUpdated;
 import com.athenhub.vendorservice.vendor.domain.service.HubExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.MemberExistenceChecker;
 import com.athenhub.vendorservice.vendor.domain.service.PermissionChecker;
@@ -45,9 +49,11 @@ public class VendorManageService implements VendorRegister, VendorManager {
   private final PermissionChecker permissionChecker;
   private final HubExistenceChecker hubExistenceChecker;
   private final MemberExistenceChecker memberExistenceChecker;
+  private final VendorEventPublisher vendorEventPublisher;
 
   @Override
-  public Vendor register(VendorRegisterRequest registerRequest, UUID requestId) {
+  public Vendor register(
+      VendorRegisterRequest registerRequest, UUID requestId, String requestUsername) {
     Vendor vendor =
         Vendor.register(
             registerRequest,
@@ -56,31 +62,49 @@ public class VendorManageService implements VendorRegister, VendorManager {
             memberExistenceChecker,
             requestId);
 
-    return vendorRepository.save(vendor);
+    vendor = vendorRepository.save(vendor);
+
+    vendorEventPublisher.publish(VendorRegistered.from(vendor, requestUsername));
+
+    return vendor;
   }
 
   @Override
-  public Vendor updateInfo(UUID vendorId, VendorUpdateRequest updateRequest, UUID requestId) {
+  public Vendor updateInfo(
+      UUID vendorId, VendorUpdateRequest updateRequest, UUID requestId, String requestUsername) {
     Vendor vendor = vendorFinder.find(vendorId);
 
     vendor.updateInfo(updateRequest, permissionChecker, hubExistenceChecker, requestId);
 
-    return vendorRepository.save(vendor);
+    vendor = vendorRepository.save(vendor);
+
+    vendorEventPublisher.publish(VendorUpdated.from(vendor, requestUsername));
+
+    return vendor;
   }
 
   @Override
-  public Vendor delete(UUID vendorId, String deleteBy, UUID requestId) {
+  public Vendor delete(UUID vendorId, String deleteBy, UUID requestId, String requestUsername) {
     Vendor vendor = vendorFinder.find(vendorId);
 
     vendor.delete(deleteBy, permissionChecker, requestId);
 
-    return vendorRepository.save(vendor);
+    vendor = vendorRepository.save(vendor);
+
+    vendorEventPublisher.publish(VendorDeleted.from(vendor, requestUsername));
+
+    return vendor;
   }
 
   @Override
-  public void changeAgent(UUID vendorId, UUID newAgentId, UUID requestId) {
+  public void changeAgent(UUID vendorId, UUID newAgentId, UUID requestId, String requestUsername) {
     Vendor vendor = vendorFinder.find(vendorId);
+    UUID oldAgentId = vendor.getAgentId().toUuid();
 
     vendor.changeAgent(newAgentId, permissionChecker, memberExistenceChecker, requestId);
+
+    vendor = vendorRepository.save(vendor);
+
+    vendorEventPublisher.publish(VendorAgentChanged.from(vendor, oldAgentId, requestUsername));
   }
 }

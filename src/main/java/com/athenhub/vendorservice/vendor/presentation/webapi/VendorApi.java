@@ -73,7 +73,8 @@ public class VendorApi {
   public VendorRegisterResponse register(
       @AuthenticationPrincipal AuthenticatedUser requestUser,
       @RequestBody VendorRegisterRequest registerRequest) {
-    Vendor vendor = vendorRegister.register(registerRequest, requestUser.id());
+    Vendor vendor =
+        vendorRegister.register(registerRequest, requestUser.id(), requestUser.username());
 
     return VendorRegisterResponse.from(vendor);
   }
@@ -134,7 +135,8 @@ public class VendorApi {
       @AuthenticationPrincipal AuthenticatedUser requestUser,
       @PathVariable UUID vendorId,
       @RequestBody VendorUpdateRequest updateRequest) {
-    Vendor vendor = vendorManager.updateInfo(vendorId, updateRequest, requestUser.id());
+    Vendor vendor =
+        vendorManager.updateInfo(vendorId, updateRequest, requestUser.id(), requestUser.username());
 
     return VendorUpdateResponse.from(vendor);
   }
@@ -152,7 +154,9 @@ public class VendorApi {
   @DeleteMapping("/v1/vendors/{vendorId}")
   public VendorDeleteResponse delete(
       @AuthenticationPrincipal AuthenticatedUser requestUser, @PathVariable UUID vendorId) {
-    Vendor vendor = vendorManager.delete(vendorId, requestUser.getUsername(), requestUser.id());
+    Vendor vendor =
+        vendorManager.delete(
+            vendorId, requestUser.getUsername(), requestUser.id(), requestUser.username());
 
     return VendorDeleteResponse.from(vendor);
   }
@@ -188,6 +192,7 @@ public class VendorApi {
       @AuthenticationPrincipal AuthenticatedUser requestUser,
       @PathVariable UUID vendorId,
       @RequestBody VendorAgentChangeRequest changeRequest) {
-    vendorManager.changeAgent(vendorId, changeRequest.newAgentId(), requestUser.id());
+    vendorManager.changeAgent(
+        vendorId, changeRequest.newAgentId(), requestUser.id(), requestUser.username());
   }
 }

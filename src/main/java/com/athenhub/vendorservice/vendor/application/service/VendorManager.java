@@ -29,19 +29,30 @@ public interface VendorManager {
    *
    * @param vendorId 수정할 업체 ID (필수)
    * @param updateRequest 수정 요청 DTO (필수, 유효성 검사 적용)
+   * @param requestId 변경 요청자 (필수)
+   * @param requestUsername 요청자 계정 (필수)
    * @return 수정된 {@link Vendor} 엔티티
    */
   Vendor updateInfo(
-      @NotNull UUID vendorId, @Valid VendorUpdateRequest updateRequest, @NotNull UUID requestId);
+      @NotNull UUID vendorId,
+      @Valid VendorUpdateRequest updateRequest,
+      @NotNull UUID requestId,
+      @NotNull String requestUsername);
 
   /**
    * 업체를 삭제한다.
    *
    * @param vendorId 삭제할 업체 ID (필수)
    * @param deleteBy 삭제 요청자 (필수)
+   * @param requestId 변경 요청자 (필수)
+   * @param requestUsername 요청자 계정 (필수)
    * @return 삭제 처리된 {@link Vendor} 엔티티
    */
-  Vendor delete(@NotNull UUID vendorId, @NotBlank String deleteBy, @NotNull UUID requestId);
+  Vendor delete(
+      @NotNull UUID vendorId,
+      @NotBlank String deleteBy,
+      @NotNull UUID requestId,
+      @NotNull String requestUsername);
 
   /**
    * 업체 담당자를 변경한다.
@@ -49,6 +60,11 @@ public interface VendorManager {
    * @param vendorId 변경할 업체 ID (필수)
    * @param newAgentId 변경할 업체 담당자 ID (필수)
    * @param requestId 변경 요청자 (필수)
+   * @param requestUsername 요청자 계정 (필수)
    */
-  void changeAgent(@NotNull UUID vendorId, @NotNull UUID newAgentId, @NotNull UUID requestId);
+  void changeAgent(
+      @NotNull UUID vendorId,
+      @NotNull UUID newAgentId,
+      @NotNull UUID requestId,
+      @NotNull String requestUsername);
 }
