@@ -9,7 +9,6 @@ import com.athenhub.vendorservice.vendor.infrastructure.client.HubServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.client.MemberServiceClient;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.HubManager;
 import com.athenhub.vendorservice.vendor.infrastructure.dto.MemberInfo;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +29,7 @@ class PermissionCheckServiceTest {
   void registerPermissionIfMasterManagerReturnTrue() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, null, true);
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, true);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -43,7 +42,7 @@ class PermissionCheckServiceTest {
   void registerPermissionIfManagerOfHubReturnTrue() {
     UUID memberId = UUID.randomUUID();
     MemberInfo memberInfo =
-        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, true);
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
@@ -57,7 +56,7 @@ class PermissionCheckServiceTest {
   void registerPermissionIfNotManagerOfHubReturnFalse() {
     UUID memberId = UUID.randomUUID();
     MemberInfo memberInfo =
-        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, true);
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
@@ -72,7 +71,7 @@ class PermissionCheckServiceTest {
   void registerPermissionIfNotManagerReturnFalse() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, null, true);
+            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, true);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -85,7 +84,7 @@ class PermissionCheckServiceTest {
   void registerPermissionIfDeactivatedReturnFalse() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, null, false);
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, false);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -98,7 +97,7 @@ class PermissionCheckServiceTest {
   void updatePermissionIfVendorAgentReturnTrue() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.VENDOR_AGENT, MemberStatus.ACTIVATED, null, true);
+            UUID.randomUUID(), MemberRole.VENDOR_AGENT, MemberStatus.ACTIVATED, true);
 
     assertThat(
             permissionChecker.hasUpdatePermission(
@@ -110,7 +109,7 @@ class PermissionCheckServiceTest {
   void updatePermissionIfMasterManagerReturnTrue() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, null, true);
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, true);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -124,7 +123,7 @@ class PermissionCheckServiceTest {
   void updatePermissionIfManagerOfHubReturnTrue() {
     UUID memberId = UUID.randomUUID();
     MemberInfo memberInfo =
-        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, true);
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
@@ -141,7 +140,7 @@ class PermissionCheckServiceTest {
   void updatePermissionIfNotManagerOfHubAndVendorAgentReturnFalse() {
     UUID memberId = UUID.randomUUID();
     MemberInfo memberInfo =
-        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, true);
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
@@ -159,7 +158,7 @@ class PermissionCheckServiceTest {
   void updatePermissionIfNotManagerAndVendorAgentReturnFalse() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, null, true);
+            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, true);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -173,7 +172,7 @@ class PermissionCheckServiceTest {
   void updatePermissionIfDeactivatedReturnFalse() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, null, false);
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, false);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -187,7 +186,7 @@ class PermissionCheckServiceTest {
   void deletePermissionIfMasterManagerReturnTrue() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, null, true);
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.ACTIVATED, true);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -199,7 +198,7 @@ class PermissionCheckServiceTest {
   void deletePermissionIfManagerOfHubReturnTrue() {
     UUID memberId = UUID.randomUUID();
     MemberInfo memberInfo =
-        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, true);
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
@@ -213,7 +212,7 @@ class PermissionCheckServiceTest {
   void deletePermissionIfNotManagerOfHubReturnFalse() {
     UUID memberId = UUID.randomUUID();
     MemberInfo memberInfo =
-        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, null, true);
+        createMemberInfo(memberId, MemberRole.HUB_MANAGER, MemberStatus.ACTIVATED, true);
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
     UUID hubId = UUID.randomUUID();
@@ -228,7 +227,7 @@ class PermissionCheckServiceTest {
   void deletePermissionIfNotManagerReturnFalse() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, null, true);
+            UUID.randomUUID(), MemberRole.SHIPPING_AGENT, MemberStatus.ACTIVATED, true);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -240,7 +239,7 @@ class PermissionCheckServiceTest {
   void deletePermissionIfDeactivatedReturnFalse() {
     MemberInfo memberInfo =
         createMemberInfo(
-            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, null, false);
+            UUID.randomUUID(), MemberRole.MASTER_MANAGER, MemberStatus.DEACTIVATED, false);
 
     when(memberServiceClient.getMemberInfo(memberInfo.id())).thenReturn(memberInfo);
 
@@ -252,20 +251,16 @@ class PermissionCheckServiceTest {
       UUID memberId,
       MemberRole role,
       MemberStatus status,
-      LocalDateTime deletedAt,
       boolean isActivated) {
     return new MemberInfo(
         memberId,
         "테스트 회원",
         "testMember",
         "testSlackId",
-        "서울 물류",
         role,
         status,
-        LocalDateTime.now(),
-        LocalDateTime.now(),
-        deletedAt,
-        null,
+        "서울 물류",
+        "HUB",
         isActivated);
   }
 }

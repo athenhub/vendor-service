@@ -35,6 +35,6 @@ public class MemberExistenceCheckService implements MemberExistenceChecker {
   @Override
   public boolean hasMember(UUID memberId) {
     MemberInfo member = memberServiceClient.getMemberInfo(memberId);
-    return Objects.nonNull(member) && Objects.isNull(member.deletedAt());
+    return Objects.nonNull(member) && member.isActivated();
   }
 }

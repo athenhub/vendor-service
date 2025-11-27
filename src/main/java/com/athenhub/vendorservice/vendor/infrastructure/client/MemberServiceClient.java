@@ -22,6 +22,6 @@ public interface MemberServiceClient {
    * @param memberId 회원 식별자(UUID)
    * @return 회원 정보 객체 {@link MemberInfo}
    */
-  @GetMapping("v1/members/{memberId}")
+  @GetMapping("profile/{memberId}")
   MemberInfo getMemberInfo(@PathVariable("memberId") UUID memberId);
 }
